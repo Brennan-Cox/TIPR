@@ -55,7 +55,7 @@ def classify_Random_Number(comparison_Set, source_Set, key_Set):
             row += 1
             column = 0
 
-        a, b, F, yA, yB, total_cost, iteration, time, DA, SB = find_Cost_Between_Images(comparison_Set[i], rand_Image, delta=0.5)
+        a, b, F, yA, yB, total_cost, iteration, time, DA, SB = find_Cost_Between_Images(comparison_Set[i], rand_Image)
         
         cost = total_cost.cpu().numpy()
         if (cost < best_Distance):
