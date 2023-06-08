@@ -25,11 +25,11 @@ def image_To_Point_Array_SDArray(image, Threshold=100):
 
     #supply demand list
     sD = []
-    for x in range(image.shape[0]):
-        for y in range(image.shape[1]):
-            cell = image[x][y]
+    for y in range(image.shape[0]):
+        for x in range(image.shape[1]):
+            cell = image[y][x]
             if cell >= Threshold:
-                list.append([y, x]) #add point
+                list.append([x, y]) #add point
                 sD.append(cell) #add sd
     return list, sD
 
@@ -52,12 +52,13 @@ def images_To_Ndarrays(first, second, Threshold=100):
     #     firstSD = secondSD
     #     secondSD = temp
 
+    empty = 0.0000000000000000000000001
     while len(firstList) > len(secondList):
         secondList.append(secondList[0])
-        secondSD.append(0)
+        secondSD.append(empty)
     while len(secondList) > len(firstList):
         firstList.append(firstList[0])
-        firstSD.append(0)
+        firstSD.append(empty)
 
     #to np arrays
     firstSD = np.array(firstSD)
@@ -73,13 +74,13 @@ def images_To_Ndarrays(first, second, Threshold=100):
 def image_To_Convolutions(img):
     img = image_To_GrayScale(img)
 
-    horizontal = np.array([[-1, -1, -1],
-                       [0, 0, 0],
-                       [1, 1, 1]])
+    horizontal = np.array([[-2, -1, -2],
+                       [2, 3, 2],
+                       [-2, -1, -2]])
     
-    verticle = np.array([[-1, 0, 1],
-                         [-1, 0, 1],
-                         [-1, 0, 1]])
+    verticle = np.array([[-2, 2, -2],
+                     [-1, 3, -1],
+                     [-2, 2, -2]])
     
     convolutions = []
     convolutions.append(cv2.filter2D(src=img, ddepth=-1, kernel=horizontal))
@@ -91,18 +92,18 @@ def display_Relation(firstImage, secondImage, firstImagePoints, secondImagePoint
     width = sum([firstImage.shape[1], secondImage.shape[1]])
     newImage = Image.new('L', (width, height))
     newImage.paste(Image.fromarray(firstImage))
-    x_Offset = firstImage.shape[0]
+    x_Offset = firstImage.shape[1]
     newImage.paste(Image.fromarray(secondImage), (x_Offset, 0))
     subplot.imshow(newImage, cmap='gray')
-    for point in firstImagePoints:
-        subplot.plot(point[0], point[1], marker='o', color='white')
-    for point in secondImagePoints:
-        subplot.plot(point[0] + x_Offset, point[1], marker='o', color='white')
-    for x in range(len(transportPlan)):
-        for y in range(len(transportPlan[x])):
-            if (transportPlan[x][y] > 0):
+    # for point in firstImagePoints:
+    #     subplot.plot(point[0], point[1], marker='o', color='white')
+    # for point in secondImagePoints:
+    #     subplot.plot(point[0] + x_Offset, point[1], marker='o', color='white')
+    for x in range(firstImagePoints.shape[0]):
+        for y in range(secondImagePoints.shape[0]):
+            if (transportPlan[y][x] > 0.001):
                 point1 = firstImagePoints[x]
                 point2 = secondImagePoints[y]
                 xVals = [point1[0], point2[0] + x_Offset]
                 yVals = [point1[1], point2[1]]
-                subplot.plot(xVals, yVals, linewidth=transportPlan[x][y] * 200)
+                subplot.plot(xVals, yVals)

@@ -2,10 +2,12 @@ from keras.datasets import mnist
 from OptimalTransportGPU import find_Cost_Between_Images
 import matplotlib.pyplot as plt
 import numpy as np
-from ImageUtility import display_Relation
+from ImageUtility import display_Relation, image_To_Convolutions
 from PIL import Image
 
+print("MNIST loading...")
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
+print("loaded")
 
 # #returns a set of random images associated with the respective answer
 # def random_Comparison_Set(set_Images, set_Answer):
@@ -111,13 +113,43 @@ from PIL import Image
 #         # display_Set(set)
 #     return success / itterations
 
+def test(first, second, subplot):
+    print("transporting...")
+    a, b, F, yA, yB, total_cost, iteration, time, DA, SB = find_Cost_Between_Images(first, second, Threshold=50)
+    print("Calculation time took: {}s".format(time))
+    display_Relation(first, second, a, b, F, subplot)
+    # array = np.array(F)
+    # print("result")
+    # print("how much is each supply node supplying?")
+    # for i in range(len(a)):
+    #     print(np.sum(array[i]), SB[i])
+    # print("how much is each demand node receiving?")
+    # for i in range(len(b)):
+    #     sum = 0
+    #     for k in range(len(a)):
+    #         sum += array[k][i]
+    #     print(sum, DA[i])
+    # print(np.sum(array))
+    print("Done")
 
-first = x_train[0]
-second = x_train[0]
-a, b, F, yA, yB, total_cost, iteration, time = find_Cost_Between_Images(first, second, Threshold=50)
 fig, axs = plt.subplots(2)
-display_Relation(first, second, a, b, F, axs[0])
-first = x_train[1]
-second = x_train[0]
-a, b, F, yA, yB, total_cost, iteration, time = find_Cost_Between_Images(first, second, Threshold=50)
-display_Relation(first, second, a, b, F, axs[1])
+# first = x_train[0]
+# second = x_train[0]
+# test(first, second, axs[0])
+first = x_train[3]
+second = x_train[1]
+
+height = max(first.shape[0], second.shape[0])
+width = sum([first.shape[1], second.shape[1]])
+newImage = Image.new('L', (width, height))
+newImage.paste(Image.fromarray(first))
+x_Offset = first.shape[0]
+newImage.paste(Image.fromarray(second), (x_Offset, 0))
+axs[1].imshow(newImage, cmap='gray')
+# test(first, second, axs[1])
+firstC = image_To_Convolutions(first)
+secondC = image_To_Convolutions(second)
+test(first, second, axs[0])
+# test(firstC[0], secondC[0], axs[1])
+# test(firstC[1], secondC[1], axs[2])
+
