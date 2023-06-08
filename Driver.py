@@ -11,7 +11,7 @@ print("MNIST loading...")
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 print("loaded")
 
-#returns a set of random images associated with the respective answer
+# returns a set of random images associated with the respective answer
 def random_Comparison_Set(set_Images, set_Answer):
     #set to return of random images of numbers
     set = ['-']*10
@@ -26,9 +26,11 @@ def random_Comparison_Set(set_Images, set_Answer):
             satisfy += 1
     return set
 
+# This method will take a random number from the source set with given actual as key set
+# Returns boolean true or false if the number was correctly identified or not
 def classify_Random_Number(comparison_Set, source_Set, key_Set):
     fig, axs = plt.subplots(int((len(comparison_Set) + 2) / 2), 2)
-    fig.subplots_adjust(top=4.0, hspace=0)
+    fig.subplots_adjust(top=3.0, hspace=0)
 
     axs[0, 0].set_title("Comparison Set")
     display_Set(axs[0, 0], comparison_Set)
@@ -53,7 +55,7 @@ def classify_Random_Number(comparison_Set, source_Set, key_Set):
             row += 1
             column = 0
 
-        a, b, F, yA, yB, total_cost, iteration, time, DA, SB = find_Cost_Between_Images(comparison_Set[i], rand_Image, delta=0.9)
+        a, b, F, yA, yB, total_cost, iteration, time, DA, SB = find_Cost_Between_Images(comparison_Set[i], rand_Image, delta=0.5)
         
         cost = total_cost.cpu().numpy()
         if (cost < best_Distance):
@@ -63,9 +65,18 @@ def classify_Random_Number(comparison_Set, source_Set, key_Set):
         subplot.set_xlabel("Calculation took {}s\nWith cost of {}".format(round(time, 4), cost))
         display_Relation(comparison_Set[i], rand_Image, a, b, F, subplot)
     print("Calculation finished, the number {} was classified as {}".format(rand_Answer, best_Candidate))
+    # fig.savefig('figures/{}.jpg'.format(num_to_word.number_to_words(random.randint(0, 10000))))
     return best_Candidate == rand_Answer
     
-classify_Random_Number(random_Comparison_Set(x_test, y_test), x_train, y_train)
+totalCorrect = 0
+testCases = 1
+for i in range(testCases):
+    set = random_Comparison_Set(x_test, y_test)
+    result = classify_Random_Number(set, x_train, y_train)
+    if (result):
+        totalCorrect = totalCorrect + 1
+print("Accuracy of OT is {}%".format(totalCorrect / testCases * 100))
+    
 
 # def convolution_Of_Set(set):
 #     result = []
@@ -85,44 +96,3 @@ classify_Random_Number(random_Comparison_Set(x_test, y_test), x_train, y_train)
 #             success += classify_Random_Number(set, x_train, y_train)
 #         # display_Set(set)
 #     return success / itterations
-
-def test(first, second, subplot):
-    print("transporting...")
-    a, b, F, yA, yB, total_cost, iteration, time, DA, SB = find_Cost_Between_Images(first, second, Threshold=50)
-    print("Calculation time took: {}s".format(time))
-    display_Relation(first, second, a, b, F, subplot)
-    # array = np.array(F)
-    # print("result")
-    # print("how much is each supply node supplying?")
-    # for i in range(len(a)):
-    #     print(np.sum(array[i]), SB[i])
-    # print("how much is each demand node receiving?")
-    # for i in range(len(b)):
-    #     sum = 0
-    #     for k in range(len(a)):
-    #         sum += array[k][i]
-    #     print(sum, DA[i])
-    # print(np.sum(array))
-    print("Done")
-
-# fig, axs = plt.subplots(2)
-# # first = x_train[0]
-# # second = x_train[0]
-# # test(first, second, axs[0])
-# first = x_train[3]
-# second = x_train[1]
-
-# height = max(first.shape[0], second.shape[0])
-# width = sum([first.shape[1], second.shape[1]])
-# newImage = Image.new('L', (width, height))
-# newImage.paste(Image.fromarray(first))
-# x_Offset = first.shape[0]
-# newImage.paste(Image.fromarray(second), (x_Offset, 0))
-# axs[1].imshow(newImage, cmap='gray')
-# # test(first, second, axs[1])
-# firstC = image_To_Convolutions(first)
-# secondC = image_To_Convolutions(second)
-# test(first, second, axs[0])
-# # test(firstC[0], secondC[0], axs[1])
-# # test(firstC[1], secondC[1], axs[2])
-

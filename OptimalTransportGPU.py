@@ -35,7 +35,7 @@ def find_Cost(a, b, DA, SB, delta, is_Transport):
         return F, yA, yB, total_cost, iteration, (end - start)
     
     # Finds the cost between two images and returns all params
-def find_Cost_Between_Images(imageOne, imageTwo, is_Transport=True, delta=0.1, Threshold=100):
+def find_Cost_Between_Images(imageOne, imageTwo, is_Transport=True, delta=0.001, Threshold=100):
     a, b, DA, SB = images_To_Ndarrays(imageOne, imageTwo, Threshold)
     # print('Elements of A', a)
     # print('Elements of B', b)

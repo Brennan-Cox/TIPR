@@ -40,26 +40,6 @@ def images_To_Ndarrays(first, second, Threshold=100):
     firstList, firstSD = image_To_Point_Array_SDArray(first, Threshold)
     secondList, secondSD = image_To_Point_Array_SDArray(second, Threshold)
 
-    # #normalize
-    # #*****Dont know why this solved issue This needs further research
-    # #THIS IS A SIGNIFICANT ISSUE
-    # if len(firstList) < len(secondList):
-    #     temp = firstList
-    #     firstList = secondList
-    #     secondList = temp
-
-    #     temp = firstSD
-    #     firstSD = secondSD
-    #     secondSD = temp
-
-    empty = 0.0000000000000000000000001
-    while len(firstList) > len(secondList):
-        secondList.append(secondList[0])
-        secondSD.append(empty)
-    while len(secondList) > len(firstList):
-        firstList.append(firstList[0])
-        firstSD.append(empty)
-
     #to np arrays
     firstSD = np.array(firstSD)
     secondSD = np.array(secondSD)
