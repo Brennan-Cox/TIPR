@@ -2,97 +2,70 @@ from keras.datasets import mnist
 from OptimalTransportGPU import find_Cost_Between_Images
 import matplotlib.pyplot as plt
 import numpy as np
-from ImageUtility import display_Relation, image_To_Convolutions
+from ImageUtility import display_Relation, display_Set
 from PIL import Image
+import random
+import inflect
 
 print("MNIST loading...")
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 print("loaded")
 
-# #returns a set of random images associated with the respective answer
-# def random_Comparison_Set(set_Images, set_Answer):
-#     #set to return of random images of numbers
-#     set = ['-']*10
+#returns a set of random images associated with the respective answer
+def random_Comparison_Set(set_Images, set_Answer):
+    #set to return of random images of numbers
+    set = ['-']*10
 
-#     satisfy = 0
-#     while satisfy < 10:
-#         #get rand number
-#         rand = random.randint(0, len(set_Answer) - 1)
-#         if len(set[set_Answer[rand]]) == 1:
-#             set[set_Answer[rand]] = set_Images[rand]
-#             satisfy += 1
-#     return set
+    satisfy = 0
+    while satisfy < 10:
+        #get rand number
+        rand = random.randint(0, len(set_Answer) - 1)
+        if len(set[set_Answer[rand]]) == 1:
+            set[set_Answer[rand]] = set_Images[rand]
+            # print(rand)
+            satisfy += 1
+    return set
 
-# #method to display a set of images starting at id 0
-# #press random key to close all windows
-# def display_Set(set, string='number'):
-#     id = 0
-#     for img in set:
-#         str = "{} = {}\n".format(string, id)
-#         cv2.imshow(str, img)
-#         id += 1
-#     cv2.waitKey(0)
-#     cv2.destroyAllWindows()
+def classify_Random_Number(comparison_Set, source_Set, key_Set):
+    fig, axs = plt.subplots(int((len(comparison_Set) + 2) / 2), 2)
+    fig.subplots_adjust(top=4.0, hspace=0)
 
-# #takes a comparison set, a source set, and a key set
-# #a random image is chosen from the source set and is then compared to all
-# #from the comparison set, the closest is then classified as the orignial image
-# def classify_Random_Number(comparison_Set, source_Set, key_Set):
-#     total_time = 0
-#     rand = random.randint(0, len(source_Set) - 1)
-#     rand_Image = source_Set[rand]
-#     best_Distance = float('inf')
-#     best_Candidite = 0
-#     for index in range(0, len(comparison_Set)):
-#         comp = comparison_Set[index]
-#         result, seconds = compare_Images(comp, rand_Image)
-#         print(result)
-#         print(key_Set[rand], index, "**\n")
-#         if result.cpu().numpy() < best_Distance:
-#             best_Distance = result.cpu().numpy()
-#             best_Candidite = index
-#         total_time += seconds
-#     print("\n***\nrandom number {} was classified as {}".format(key_Set[rand], best_Candidite))
-#     # cv2.imshow('random', rand_Image)        
-#     hours = total_time // 3600
-#     total_time -= hours * 3600
-#     minutes = total_time // 60
-#     total_time -= minutes * 60
-#     print("Result took time = {}h {}m {}s\n***\n ".format(hours, minutes, total_time))
-#     return (1 if key_Set[rand] == best_Candidite else 0)
+    axs[0, 0].set_title("Comparison Set")
+    display_Set(axs[0, 0], comparison_Set)
 
-# def classify_Random_Number_Convolution(comparison_Set, source_Set, key_Set, set):
-#     total_time = 0
-#     rand = random.randint(0, len(source_Set) - 1)
-#     rand_Image = image_To_Convolutions(source_Set[rand])
-#     # cv2.imshow('rand', source_Set[rand])
-#     best_Distance = float('inf')
-#     best_Candidite = 0
-#     for index in range(0, len(comparison_Set)):
-#         # cv2.imshow('comp', set[index])
-#         comp = comparison_Set[index]
-#         result_Sum = 0
-#         for i in range(len(comp)):
-#             result, seconds = compare_Images(comp[i], rand_Image[i])
-#             result_Sum += result.cpu().numpy()
-#             total_time += seconds
-#             # cv2.imshow('randCOV', rand_Image[i])
-#             # cv2.imshow('compCOV', comp[i])
-#             # cv2.waitKey(0)
-#             # cv2.destroyAllWindows();
-#         print(result_Sum, key_Set[rand], index, "**\n")
-#         if result_Sum < best_Distance:
-#             best_Distance = result_Sum
-#             best_Candidite = index
-#         total_time += seconds
-#     print("\n***\nrandom number {} was classified as {}".format(key_Set[rand], best_Candidite))
-#     # cv2.imshow('random', rand_Image)        
-#     hours = total_time // 3600
-#     total_time -= hours * 3600
-#     minutes = total_time // 60
-#     total_time -= minutes * 60
-#     print("Result took time = {}h {}m {}s\n***\n ".format(hours, minutes, total_time))
-#     return (1 if key_Set[rand] == best_Candidite else 0)
+    rand = random.randint(0, len(source_Set) - 1)
+    rand_Image = source_Set[rand]
+    rand_Answer = key_Set[rand]
+    axs[0, 1].set_title("Image to identify")
+    axs[0, 1].imshow(rand_Image, cmap="gray")
+
+    row = 1
+    column = 0
+    num_to_word = inflect.engine()
+
+    best_Distance = float('inf')
+    best_Candidate = 0
+    for i in range(len(comparison_Set)):
+        subplot = axs[row, column]
+        subplot.set_title(num_to_word.number_to_words(i))
+        column += 1
+        if (column == 2):
+            row += 1
+            column = 0
+
+        a, b, F, yA, yB, total_cost, iteration, time, DA, SB = find_Cost_Between_Images(comparison_Set[i], rand_Image, delta=0.9)
+        
+        cost = total_cost.cpu().numpy()
+        if (cost < best_Distance):
+            best_Distance = cost
+            best_Candidate = i
+
+        subplot.set_xlabel("Calculation took {}s\nWith cost of {}".format(round(time, 4), cost))
+        display_Relation(comparison_Set[i], rand_Image, a, b, F, subplot)
+    print("Calculation finished, the number {} was classified as {}".format(rand_Answer, best_Candidate))
+    return best_Candidate == rand_Answer
+    
+classify_Random_Number(random_Comparison_Set(x_test, y_test), x_train, y_train)
 
 # def convolution_Of_Set(set):
 #     result = []
@@ -132,24 +105,24 @@ def test(first, second, subplot):
     # print(np.sum(array))
     print("Done")
 
-fig, axs = plt.subplots(2)
-# first = x_train[0]
-# second = x_train[0]
-# test(first, second, axs[0])
-first = x_train[3]
-second = x_train[1]
+# fig, axs = plt.subplots(2)
+# # first = x_train[0]
+# # second = x_train[0]
+# # test(first, second, axs[0])
+# first = x_train[3]
+# second = x_train[1]
 
-height = max(first.shape[0], second.shape[0])
-width = sum([first.shape[1], second.shape[1]])
-newImage = Image.new('L', (width, height))
-newImage.paste(Image.fromarray(first))
-x_Offset = first.shape[0]
-newImage.paste(Image.fromarray(second), (x_Offset, 0))
-axs[1].imshow(newImage, cmap='gray')
-# test(first, second, axs[1])
-firstC = image_To_Convolutions(first)
-secondC = image_To_Convolutions(second)
-test(first, second, axs[0])
-# test(firstC[0], secondC[0], axs[1])
-# test(firstC[1], secondC[1], axs[2])
+# height = max(first.shape[0], second.shape[0])
+# width = sum([first.shape[1], second.shape[1]])
+# newImage = Image.new('L', (width, height))
+# newImage.paste(Image.fromarray(first))
+# x_Offset = first.shape[0]
+# newImage.paste(Image.fromarray(second), (x_Offset, 0))
+# axs[1].imshow(newImage, cmap='gray')
+# # test(first, second, axs[1])
+# firstC = image_To_Convolutions(first)
+# secondC = image_To_Convolutions(second)
+# test(first, second, axs[0])
+# # test(firstC[0], secondC[0], axs[1])
+# # test(firstC[1], secondC[1], axs[2])
 

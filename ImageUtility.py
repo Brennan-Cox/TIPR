@@ -107,3 +107,18 @@ def display_Relation(firstImage, secondImage, firstImagePoints, secondImagePoint
                 xVals = [point1[0], point2[0] + x_Offset]
                 yVals = [point1[1], point2[1]]
                 subplot.plot(xVals, yVals)
+
+#method will take a set of images and append them together
+def display_Set(subplot, set):
+    height = 0
+    width = 0
+    for img in set:
+        if (img.shape[0] > height):
+            height = img.shape[0]
+        width += img.shape[1]
+    newImage = Image.new('L', (width, height))
+    x_Offset = 0
+    for img in set:
+        newImage.paste(Image.fromarray(img), (x_Offset, 0))
+        x_Offset += img.shape[1]
+    subplot.imshow(newImage, cmap="gray")
