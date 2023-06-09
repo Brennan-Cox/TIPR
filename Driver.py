@@ -56,7 +56,7 @@ def classify_Random_Number(comparison_Set, source_Set, key_Set):
             column = 0
 
         print("Transporting...")
-        a, b, F, yA, yB, total_cost, iteration, time, DA, SB = find_Cost_Between_Images(comparison_Set[i], rand_Image, delta=.99)
+        a, b, F, yA, yB, total_cost, iteration, time, DA, SB = find_Cost_Between_Images(comparison_Set[i], rand_Image, delta=.01)
         print("Done in {}s".format(time))
 
         cost = total_cost.cpu().numpy()
@@ -75,7 +75,7 @@ def classify_Random_Number(comparison_Set, source_Set, key_Set):
     return best_Candidate == rand_Answer
     
 totalCorrect = 0
-testCases = 1
+testCases = 100
 for i in range(testCases):
     set = random_Comparison_Set(x_test, y_test)
     result = classify_Random_Number(set, x_train, y_train)
