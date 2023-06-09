@@ -86,7 +86,8 @@ def display_Relation(firstImage, secondImage, firstImagePoints, secondImagePoint
                 point2 = secondImagePoints[y]
                 xVals = [point1[0], point2[0] + x_Offset]
                 yVals = [point1[1], point2[1]]
-                subplot.plot(xVals, yVals)
+                # maxVal = np.amax(np.array(transportPlan))
+                subplot.plot(xVals, yVals, linewidth=0.10)
 
 #method will take a set of images and append them together
 def display_Set(subplot, set):

@@ -56,7 +56,7 @@ def classify_Random_Number(comparison_Set, source_Set, key_Set):
             column = 0
 
         print("Transporting...")
-        a, b, F, yA, yB, total_cost, iteration, time, DA, SB = find_Cost_Between_Images(comparison_Set[i], rand_Image, delta=.5)
+        a, b, F, yA, yB, total_cost, iteration, time, DA, SB = find_Cost_Between_Images(comparison_Set[i], rand_Image, delta=.99)
         print("Done in {}s".format(time))
 
         cost = total_cost.cpu().numpy()
@@ -68,16 +68,27 @@ def classify_Random_Number(comparison_Set, source_Set, key_Set):
         display_Relation(comparison_Set[i], rand_Image, a, b, F, subplot)
     print("Calculation finished, the number {} was classified as {}".format(rand_Answer, best_Candidate))
     # fig.savefig('figures/{}.jpg'.format(num_to_word.number_to_words(random.randint(0, 10000))))
+    if (best_Candidate == rand_Answer):
+        fig.set_facecolor("green")
+    else:
+        fig.set_facecolor("red")
     return best_Candidate == rand_Answer
     
 totalCorrect = 0
-testCases = 100
+testCases = 1
 for i in range(testCases):
     set = random_Comparison_Set(x_test, y_test)
     result = classify_Random_Number(set, x_train, y_train)
     if (result):
         totalCorrect = totalCorrect + 1
-print("Accuracy of OT is {}%".format(totalCorrect / testCases * 100))
+string = "Accuracy of OT is {}%".format(totalCorrect / testCases * 100)
+print(string)
+
+lines = [string]
+with open('output.txt', 'w') as f:
+    for line in lines:
+        f.write(line)
+        f.write("\n")
     
 
 # def convolution_Of_Set(set):
