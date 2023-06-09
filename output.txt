@@ -1,1 +1,1 @@
-Accuracy of OT is 0.0%
+Accuracy of OT is 100.0%

@@ -15,6 +15,7 @@ from ImageUtility import images_To_Ndarrays
 #returns a cost tensor and the time in seconds the calculation took
 def find_Cost(a, b, DA, SB, delta, is_Transport):
     with torch.no_grad():
+        #deactivated this section because it was slower
         # device = torch.device('cuda' if torch.cuda.is_available() else 'cpu')
         #for small data it seems cpu is a better device to use
         device = torch.device('cpu')

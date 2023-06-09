@@ -29,22 +29,27 @@ def random_Comparison_Set(set_Images, set_Answer):
 # This method will take a random number from the source set with given actual as key set
 # Returns boolean true or false if the number was correctly identified or not
 def classify_Random_Number(comparison_Set, source_Set, key_Set):
+    
+    #matplotlib figure with subplots
     fig, axs = plt.subplots(int((len(comparison_Set) + 2) / 2), 2)
     fig.subplots_adjust(top=3.0, hspace=0)
 
     axs[0, 0].set_title("Comparison Set")
     display_Set(axs[0, 0], comparison_Set)
 
+    #chose random image and display it
     rand = random.randint(0, len(source_Set) - 1)
     rand_Image = source_Set[rand]
     rand_Answer = key_Set[rand]
     axs[0, 1].set_title("Image to identify")
     axs[0, 1].imshow(rand_Image, cmap="gray")
 
+    #automatic number to word and indexing
     row = 1
     column = 0
     num_to_word = inflect.engine()
 
+    #for each candidate test against random to classify random
     best_Distance = float('inf')
     best_Candidate = 0
     for i in range(len(comparison_Set)):
@@ -56,7 +61,7 @@ def classify_Random_Number(comparison_Set, source_Set, key_Set):
             column = 0
 
         print("Transporting...")
-        a, b, F, yA, yB, total_cost, iteration, time, DA, SB = find_Cost_Between_Images(comparison_Set[i], rand_Image, delta=.01)
+        a, b, F, yA, yB, total_cost, iteration, time, DA, SB = find_Cost_Between_Images(comparison_Set[i], rand_Image, delta=.5)
         print("Done in {}s".format(time))
 
         cost = total_cost.cpu().numpy()
@@ -66,6 +71,7 @@ def classify_Random_Number(comparison_Set, source_Set, key_Set):
 
         subplot.set_xlabel("Calculation took {}s\nWith cost of {}".format(round(time, 4), cost))
         display_Relation(comparison_Set[i], rand_Image, a, b, F, subplot)
+        
     print("Calculation finished, the number {} was classified as {}".format(rand_Answer, best_Candidate))
     # fig.savefig('figures/{}.jpg'.format(num_to_word.number_to_words(random.randint(0, 10000))))
     if (best_Candidate == rand_Answer):
@@ -75,7 +81,7 @@ def classify_Random_Number(comparison_Set, source_Set, key_Set):
     return best_Candidate == rand_Answer
     
 totalCorrect = 0
-testCases = 100
+testCases = 1
 for i in range(testCases):
     set = random_Comparison_Set(x_test, y_test)
     result = classify_Random_Number(set, x_train, y_train)

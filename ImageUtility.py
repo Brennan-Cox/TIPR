@@ -9,6 +9,7 @@ def image_To_GrayScale(image):
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     return image
 
+#converts an image to an ndarray
 def image_To_Ndarray(image):
     arr = []
     for x in range(image.shape[0]):
@@ -18,6 +19,8 @@ def image_To_Ndarray(image):
         arr.append(subarr)
     return np.array(arr)
 
+#takes an image and returns an array of points over a given threshold
+#also returns the cell values of the points taken
 def image_To_Point_Array_SDArray(image, Threshold=100):
     image = image_To_GrayScale(image)
     #list of points
@@ -25,11 +28,12 @@ def image_To_Point_Array_SDArray(image, Threshold=100):
 
     #supply demand list
     sD = []
-    for y in range(image.shape[0]):
-        for x in range(image.shape[1]):
-            cell = image[y][x]
+    for x in range(image.shape[0]):
+        for y in range(image.shape[1]):
+            cell = image[x][y]
             if cell >= Threshold:
-                list.append([x, y]) #add point
+                #images are in format y then x
+                list.append([y, x]) #add point
                 sD.append(cell) #add sd
     return list, sD
 
@@ -67,29 +71,32 @@ def image_To_Convolutions(img):
     convolutions.append(cv2.filter2D(src=img, ddepth=-1, kernel=verticle))
     return convolutions
 
+# This method will take two images, their significant points, a transport plan between
+# the point sets and a subplot and plot the given relation
 def display_Relation(firstImage, secondImage, firstImagePoints, secondImagePoints, transportPlan, subplot):
+    
     height = max(firstImage.shape[0], secondImage.shape[0])
     width = sum([firstImage.shape[1], secondImage.shape[1]])
     newImage = Image.new('L', (width, height))
+    
     newImage.paste(Image.fromarray(firstImage))
     x_Offset = firstImage.shape[1]
+    
     newImage.paste(Image.fromarray(secondImage), (x_Offset, 0))
     subplot.imshow(newImage, cmap='gray')
-    # for point in firstImagePoints:
-    #     subplot.plot(point[0], point[1], marker='o', color='white')
-    # for point in secondImagePoints:
-    #     subplot.plot(point[0] + x_Offset, point[1], marker='o', color='white')
+    
     for x in range(firstImagePoints.shape[0]):
         for y in range(secondImagePoints.shape[0]):
+            #remember image is y then x
             if (transportPlan[y][x] > 0.001):
                 point1 = firstImagePoints[x]
                 point2 = secondImagePoints[y]
                 xVals = [point1[0], point2[0] + x_Offset]
                 yVals = [point1[1], point2[1]]
-                # maxVal = np.amax(np.array(transportPlan))
+                #plot the line
                 subplot.plot(xVals, yVals, linewidth=0.10)
 
-#method will take a set of images and append them together
+#method will take a set of images and append them together in grayscale
 def display_Set(subplot, set):
     height = 0
     width = 0
