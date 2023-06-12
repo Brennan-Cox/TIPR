@@ -1,11 +1,11 @@
 from keras.datasets import mnist
 from OptimalTransportGPU import find_Cost_Between_Images
 import matplotlib.pyplot as plt
-import numpy as np
 from ImageUtility import display_Relation, display_Set
-from PIL import Image
 import random
 import inflect
+import seaborn as sb
+import numpy as np
 
 print("MNIST loading...")
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
@@ -28,40 +28,42 @@ def random_Comparison_Set(set_Images, set_Answer):
 
 # This method will take a random number from the source set with given actual as key set
 # Returns boolean true or false if the number was correctly identified or not
-def classify_Random_Number(comparison_Set, source_Set, key_Set):
+def classify_Random_Number(comparison_Set, source_Set, key_Set, plot=True):
     
     #matplotlib figure with subplots
-    fig, axs = plt.subplots(int((len(comparison_Set) + 2) / 2), 2)
-    fig.subplots_adjust(top=3.0, hspace=0)
-
-    axs[0, 0].set_title("Comparison Set")
-    display_Set(axs[0, 0], comparison_Set)
+    if (plot):
+        fig, axs = plt.subplots(int((len(comparison_Set) + 2) / 2), 2)
+        fig.subplots_adjust(top=3.0, hspace=0)
+        axs[0, 0].set_title("Comparison Set")
+        display_Set(axs[0, 0], comparison_Set)
 
     #chose random image and display it
     rand = random.randint(0, len(source_Set) - 1)
     rand_Image = source_Set[rand]
     rand_Answer = key_Set[rand]
-    axs[0, 1].set_title("Image to identify")
-    axs[0, 1].imshow(rand_Image, cmap="gray")
-
-    #automatic number to word and indexing
-    row = 1
-    column = 0
-    num_to_word = inflect.engine()
+    
+    if (plot):
+        axs[0, 1].set_title("Image to identify")
+        axs[0, 1].imshow(rand_Image, cmap="gray")
+        #automatic number to word and indexing
+        row = 1
+        column = 0
+        num_to_word = inflect.engine()
 
     #for each candidate test against random to classify random
     best_Distance = float('inf')
     best_Candidate = 0
     for i in range(len(comparison_Set)):
-        subplot = axs[row, column]
-        subplot.set_title(num_to_word.number_to_words(i))
-        column += 1
-        if (column == 2):
-            row += 1
-            column = 0
+        if (plot):
+            subplot = axs[row, column]
+            subplot.set_title(num_to_word.number_to_words(i))
+            column += 1
+            if (column == 2):
+                row += 1
+                column = 0
 
         print("Transporting...")
-        a, b, F, yA, yB, total_cost, iteration, time, DA, SB = find_Cost_Between_Images(comparison_Set[i], rand_Image, delta=.5)
+        a, b, F, yA, yB, total_cost, iteration, time, DA, SB = find_Cost_Between_Images(comparison_Set[i], rand_Image, delta=1)
         print("Done in {}s".format(time))
 
         cost = total_cost.cpu().numpy()
@@ -69,33 +71,43 @@ def classify_Random_Number(comparison_Set, source_Set, key_Set):
             best_Distance = cost
             best_Candidate = i
 
-        subplot.set_xlabel("Calculation took {}s\nWith cost of {}".format(round(time, 4), cost))
-        display_Relation(comparison_Set[i], rand_Image, a, b, F, subplot)
+        if (plot):
+            subplot.set_xlabel("Calculation took {}s\nWith cost of {}".format(round(time, 4), cost))
+            display_Relation(comparison_Set[i], rand_Image, a, b, F, subplot)
         
     print("Calculation finished, the number {} was classified as {}".format(rand_Answer, best_Candidate))
-    # fig.savefig('figures/{}.jpg'.format(num_to_word.number_to_words(random.randint(0, 10000))))
-    if (best_Candidate == rand_Answer):
-        fig.set_facecolor("green")
-    else:
-        fig.set_facecolor("red")
+    if (plot):
+        # fig.savefig('figures/{}.jpg'.format(num_to_word.number_to_words(random.randint(0, 10000))))
+        if (best_Candidate == rand_Answer):
+            fig.set_facecolor("green")
+        else:
+            fig.set_facecolor("red")
     return best_Candidate == rand_Answer
     
-totalCorrect = 0
-testCases = 1
-for i in range(testCases):
-    set = random_Comparison_Set(x_test, y_test)
-    result = classify_Random_Number(set, x_train, y_train)
-    if (result):
-        totalCorrect = totalCorrect + 1
-string = "Accuracy of OT is {}%".format(totalCorrect / testCases * 100)
-print(string)
-
-lines = [string]
-with open('output.txt', 'w') as f:
-    for line in lines:
-        f.write(line)
-        f.write("\n")
+def test(cases, trails_per_case):
+    data = []
+    for i in range(cases):
+        totalCorrect = 0
+        testCases = trails_per_case
+        for i in range(testCases):
+            set = random_Comparison_Set(x_test, y_test)
+            result = classify_Random_Number(comparison_Set=set, source_Set=x_train, key_Set=y_train, plot=False)
+            if (result):
+                totalCorrect = totalCorrect + 1
+        accuracy = totalCorrect / testCases * 100
+        data.append(accuracy)
+    sb.displot(data, kde=True, bins=cases)
     
+    accuracy = np.sum(data) / cases
+    string = "Accuracy of OT is {}%".format(accuracy)
+    print(string)
+    lines = [string]
+    with open('output.txt', 'w') as f:
+        for line in lines:
+            f.write(line)
+            f.write("\n")
+    
+test(10, 100)
 
 # def convolution_Of_Set(set):
 #     result = []
