@@ -50,9 +50,11 @@ def classify_Image(comparison_Set, Image, reg):
         
         comp_Image = comparison_Set[i]
         
+        # get sets of significant points
         a = np.argwhere(comp_Image > 0)
         b = np.argwhere(Image > 0)
         
+        # calculate transport plan and cost using POT
         start_time = time.time()
         cost_Matrix = ot.dist(a, b, 'sqeuclidean').astype(np.float64)
         cost_Matrix /= np.max(cost_Matrix)
@@ -62,6 +64,7 @@ def classify_Image(comparison_Set, Image, reg):
         end_time = time.time()
         total_time = end_time - start_time
         
+        # find lowest cost transport plan
         if (cost < best_Distance):
             best_Distance = cost
             best_Candidate = i
@@ -69,7 +72,10 @@ def classify_Image(comparison_Set, Image, reg):
         relations.append([total_time, cost, transport_Plan, a, b])
     return best_Candidate, relations
 
+# displays the relation figure where an image was procecced
 def relation_Figure(comparison_Set, rand_Image, correct, relations):
+    
+    #size of figure
     fig, axs = plt.subplots(int((len(comparison_Set) + 2) / 2), 2)
     fig.subplots_adjust(top=3.0, hspace=0)
     axs[0, 0].set_title("Comparison Set")
@@ -126,5 +132,19 @@ def test(cases, trails_per_case, isPlot, reg):
     plt.title(string + '\nMax Itteration {}'.format(reg))
     print(string)
                 
+comp = random_Comparison_Set(x_test, y_test)
+image, answer = random_Image(x_train, y_train)
+imageoutline = image_To_Outline(image)
+
+got, relations = classify_Image(comp, image, 1e18)
+relation_Figure(comp, image, got == answer, relations)
+
+compC = []
+for c in comp:
+    compC.append(image_To_Outline(c))
+gotC, relationsC = classify_Image(comp, imageoutline, 1e18)
+relation_Figure(compC, imageoutline, gotC == answer, relationsC)
+
+
 # find_Best_Comp_Set(15)
-test(30, 30, False, 1e18)
+# test(30, 30, False, 1e18)s
