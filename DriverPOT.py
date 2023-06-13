@@ -43,6 +43,7 @@ def classify_Random_Number(comparison_Set, source_Set, key_Set, reg, plot=True):
     rand_Image = source_Set[rand]
     rand_Answer = key_Set[rand]
     
+    #plot image to id
     if (plot):
         axs[0, 1].set_title("Image to identify")
         axs[0, 1].imshow(rand_Image, cmap="gray")
@@ -86,16 +87,14 @@ def classify_Random_Number(comparison_Set, source_Set, key_Set, reg, plot=True):
 
         if (plot):
             subplot.set_xlabel("Calculation took {}s\nWith cost of {}".format(round(total_time, 4), cost))
-            print(comp_Image.shape)
             display_Set(subplot, [comp_Image, rand_Image])
             x_Offset = rand_Image.shape[1]
-            print(x_Offset)
             for i in range(len(a)):
                 for j in range(len(b)):
                     if (transport_Plan[i, j] > 0):
                         subplot.plot([a[i, 1], b[j, 1] + x_Offset], [a[i, 0], b[j, 0]], linewidth=0.1)
         
-    print("Calculation finished, the number {} was classified as {}".format(rand_Answer, best_Candidate))
+    # print("Calculation finished, the number {} was classified as {}".format(rand_Answer, best_Candidate))
     if (plot):
         # fig.savefig('figures/{}.jpg'.format(num_to_word.number_to_words(random.randint(0, 10000))))
         if (best_Candidate == rand_Answer):
@@ -106,6 +105,8 @@ def classify_Random_Number(comparison_Set, source_Set, key_Set, reg, plot=True):
     
 def test(cases, trails_per_case, isPlot, reg):
     data = []
+    # set = [x_test[6437], x_test[504], x_test[996], x_test[408], x_test[1516], x_test[8192], x_test[1536], x_test[2622], x_test[3737], x_test[3966]]
+    # set = [x_test[564], x_test[2693], x_test[3775], x_test[4288], x_test[9550], x_test[710], x_test[8041], x_test[8497], x_test[8843], x_test[4316]]
     for i in range(cases):
         totalCorrect = 0
         testCases = trails_per_case
@@ -123,4 +124,29 @@ def test(cases, trails_per_case, isPlot, reg):
     plt.title(string + '\nMax Itteration {}'.format(reg))
     print(string)
     
-test(30, 30, False, 1e10)
+def find_Best_Comp_Set(req_success):
+    set = random_Comparison_Set(x_test, y_test)
+    best_In_Row = 0
+    while (best_In_Row < req_success):
+        cand_Set = random_Comparison_Set(x_test, y_test)
+        curr_Best_Correct = 0
+        cand_Correct = 0
+        for i in range(30):
+            if classify_Random_Number(comparison_Set=set, source_Set=x_train, key_Set=y_train, plot=False, reg=1e8):
+                curr_Best_Correct += 1
+            if classify_Random_Number(comparison_Set=cand_Set, source_Set=x_train, key_Set=y_train, plot=False, reg=1e8):
+                cand_Correct += 1
+        if (cand_Correct > curr_Best_Correct):
+            set = cand_Set
+            print('Old set got {} new set got {} old set streak {}'.format(curr_Best_Correct, cand_Correct, best_In_Row))
+            best_In_Row = 0
+        else:
+            best_In_Row += 1
+    display_Set(plt, set)
+    for img in set:
+        for i in range(x_test.shape[0]):
+            if (np.array_equal(img, x_test[i])):
+                print(i)
+                
+# find_Best_Comp_Set(15)
+test(30, 30, False, 1e18)
