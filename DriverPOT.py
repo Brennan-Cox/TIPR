@@ -111,9 +111,9 @@ def test(cases, trails_per_case, isPlot, reg):
     for i in range(cases):
         totalCorrect = 0
         testCases = trails_per_case
+        comparison_Set = random_Comparison_Set(x_test, y_test)
         for i in range(testCases):
             
-            comparison_Set = random_Comparison_Set(x_test, y_test)
             rand_Image, rand_Answer = random_Image(x_train, y_train)
             classified_As, relations = classify_Image(comparison_Set, rand_Image, reg)
             
@@ -131,20 +131,6 @@ def test(cases, trails_per_case, isPlot, reg):
     string = "Accuracy of OT is {}%".format(accuracy)
     plt.title(string + '\nMax Itteration {}'.format(reg))
     print(string)
-                
-comp = random_Comparison_Set(x_test, y_test)
-image, answer = random_Image(x_train, y_train)
-imageoutline = image_To_Outline(image)
-
-got, relations = classify_Image(comp, image, 1e18)
-relation_Figure(comp, image, got == answer, relations)
-
-compC = []
-for c in comp:
-    compC.append(image_To_Outline(c))
-gotC, relationsC = classify_Image(comp, imageoutline, 1e18)
-relation_Figure(compC, imageoutline, gotC == answer, relationsC)
-
 
 # find_Best_Comp_Set(15)
-# test(30, 30, False, 1e18)s
+test(30, 30, False, 1e18)
