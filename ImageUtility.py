@@ -110,3 +110,12 @@ def display_Set(subplot, set):
         newImage.paste(Image.fromarray(img), (x_Offset, 0))
         x_Offset += img.shape[1]
     subplot.imshow(newImage, cmap="gray")
+
+def image_To_Outline(img):
+    img = image_To_GrayScale(img)
+
+    outline = np.array([[0, -1 , 0],
+                        [-1, 4, -1],
+                        [0, -1, 0]])
+
+    return cv2.filter2D(src=img, ddepth=-1, kernel=outline)

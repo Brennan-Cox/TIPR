@@ -1,6 +1,6 @@
 from keras.datasets import mnist
 import matplotlib.pyplot as plt
-from ImageUtility import display_Set
+from ImageUtility import display_Set, image_To_Outline
 import random
 import inflect
 import seaborn as sb
@@ -41,6 +41,7 @@ def classify_Random_Number(comparison_Set, source_Set, key_Set, reg, plot=True):
     #chose random image and display it
     rand = random.randint(0, len(source_Set) - 1)
     rand_Image = source_Set[rand]
+    rand_Image = image_To_Outline(rand_Image)
     rand_Answer = key_Set[rand]
     
     #plot image to id
@@ -66,6 +67,7 @@ def classify_Random_Number(comparison_Set, source_Set, key_Set, reg, plot=True):
 
         # print("Transporting...")
         comp_Image = comparison_Set[i]
+        comp_Image = image_To_Outline(comp_Image)
         
         a = np.argwhere(comp_Image > 0)
         b = np.argwhere(rand_Image > 0)
