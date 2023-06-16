@@ -2,57 +2,13 @@ import cv2
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
+import inflect
 
 #if image is not already grayscale will convert and return converted
 def image_To_GrayScale(image):
     if len(image.shape) > 2:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     return image
-
-#converts an image to an ndarray
-def image_To_Ndarray(image):
-    arr = []
-    for x in range(image.shape[0]):
-        subarr = []
-        for y in range(image.shape[1]):
-            subarr.append(image[x][y])
-        arr.append(subarr)
-    return np.array(arr)
-
-#takes an image and returns an array of points over a given threshold
-#also returns the cell values of the points taken
-def image_To_Point_Array_SDArray(image, Threshold=100):
-    image = image_To_GrayScale(image)
-    #list of points
-    list = []
-
-    #supply demand list
-    sD = []
-    for x in range(image.shape[0]):
-        for y in range(image.shape[1]):
-            cell = image[x][y]
-            if cell >= Threshold:
-                #images are in format y then x
-                list.append([y, x]) #add point
-                sD.append(cell) #add sd
-    return list, sD
-
-#returns set a, b, DA, SB
-def images_To_Ndarrays(first, second, Threshold=100):
-
-    #incomplete un-normalized and unweighted arrays
-    firstList, firstSD = image_To_Point_Array_SDArray(first, Threshold)
-    secondList, secondSD = image_To_Point_Array_SDArray(second, Threshold)
-
-    #to np arrays
-    firstSD = np.array(firstSD)
-    secondSD = np.array(secondSD)
-
-    #weighted versions
-    firstSD = firstSD/np.sum(firstSD)
-    secondSD = secondSD/np.sum(secondSD)
-
-    return np.array(firstList), np.array(secondList), firstSD, secondSD
 
 #takes an image and returns a list of resultant images with convolutions applied
 def image_To_Convolutions(img):
@@ -70,31 +26,6 @@ def image_To_Convolutions(img):
     convolutions.append(cv2.filter2D(src=img, ddepth=-1, kernel=horizontal))
     convolutions.append(cv2.filter2D(src=img, ddepth=-1, kernel=verticle))
     return convolutions
-
-# This method will take two images, their significant points, a transport plan between
-# the point sets and a subplot and plot the given relation
-def display_Relation(firstImage, secondImage, firstImagePoints, secondImagePoints, transportPlan, subplot):
-    
-    height = max(firstImage.shape[0], secondImage.shape[0])
-    width = sum([firstImage.shape[1], secondImage.shape[1]])
-    newImage = Image.new('L', (width, height))
-    
-    newImage.paste(Image.fromarray(firstImage))
-    x_Offset = firstImage.shape[1]
-    
-    newImage.paste(Image.fromarray(secondImage), (x_Offset, 0))
-    subplot.imshow(newImage, cmap='gray')
-    
-    for x in range(firstImagePoints.shape[0]):
-        for y in range(secondImagePoints.shape[0]):
-            #remember image is y then x
-            if (transportPlan[y][x] > 0.001):
-                point1 = firstImagePoints[x]
-                point2 = secondImagePoints[y]
-                xVals = [point1[0], point2[0] + x_Offset]
-                yVals = [point1[1], point2[1]]
-                #plot the line
-                subplot.plot(xVals, yVals, linewidth=0.10)
 
 #method will take a set of images and append them together in grayscale
 def display_Set(subplot, set):
@@ -119,3 +50,37 @@ def image_To_Outline(img):
                         [0, -1, 0]])
 
     return cv2.filter2D(src=img, ddepth=-1, kernel=outline)
+
+# displays the relation figure where an image was procecced
+def relation_Figure(comparison_Set, rand_Image, correct, relations):
+    
+    #size of figure
+    fig, axs = plt.subplots(int((len(comparison_Set) + 2) / 2), 2)
+    fig.subplots_adjust(top=3.0, hspace=0)
+    axs[0, 0].set_title("Comparison Set")
+    display_Set(axs[0, 0], comparison_Set)
+    axs[0, 1].set_title("Image to identify")
+    axs[0, 1].imshow(rand_Image, cmap="gray")
+    #automatic number to word and indexing
+    row = 1
+    column = 0
+    num_to_word = inflect.engine()
+    for i in range(len(comparison_Set)):
+        subplot = axs[row, column]
+        subplot.set_title(num_to_word.number_to_words(i))
+        column += 1
+        if (column == 2):
+            row += 1
+            column = 0
+        total_time, cost, transport_Plan, a, b = relations[i]
+        subplot.set_xlabel("Calculation took {}s\nWith cost of {}".format(round(total_time, 4), cost))
+        display_Set(subplot, [comparison_Set[i], rand_Image])
+        x_Offset = rand_Image.shape[1]
+        for i in range(len(a)):
+            for j in range(len(b)):
+                if (transport_Plan[i, j] > 0):
+                    subplot.plot([a[i, 1], b[j, 1] + x_Offset], [a[i, 0], b[j, 0]], linewidth=0.1)
+    if (correct):
+        fig.set_facecolor("green")
+    else:
+        fig.set_facecolor("red")
