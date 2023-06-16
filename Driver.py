@@ -108,46 +108,9 @@ def test(cases, trails_per_case, isPlot, reg):
     
     accuracy = np.sum(data) / cases
     string = "Accuracy of OT is {}%".format(accuracy)
-    plt.title(string + '\nMax Itteration {}'.format(reg))
+    string += '\nReg {}'.format(reg)
+    plt.title(string)
     print(string)
     return accuracy
 
-def test_Convolution(cases, trails_per_case, isPlot, reg):
-    data = []
-    for i in range(cases):
-        totalCorrect = 0
-        testCases = trails_per_case
-        comparison_Set = random_Comparison_Set(x_test, y_test)
-        
-        for i in range(testCases):
-            
-            rand_Image, rand_Answer = random_Image(x_train, y_train)
-            classified_As, relations = classify_Image(comparison_Set, rand_Image, reg)
-            
-            if (rand_Answer == classified_As):
-                totalCorrect = totalCorrect + 1
-            
-            if (isPlot):
-                relation_Figure(comparison_Set, rand_Image, rand_Answer == classified_As, relations)
-                
-        accuracy = totalCorrect / testCases * 100
-        data.append(accuracy)
-    # sb.displot(data, kde=True, bins=cases)
-    
-    accuracy = np.sum(data) / cases
-    string = "Accuracy of OT is {}%".format(accuracy)
-    regStr = '\nReg {}'.format(reg)
-    # plt.title(string + regStr)
-    print(string + regStr)
-
-reg = 1e10
-bestReg = reg
-bestAccuracy = test(30, 30, False, reg)
-for i in range(30):
-    reg /= 10
-    acc = test(30, 30, False, reg)
-    if (acc > bestAccuracy):
-        bestReg = reg
-        bestAccuracy = acc
-
-print(bestReg)
+test(1, 1, True, 1e-4)
