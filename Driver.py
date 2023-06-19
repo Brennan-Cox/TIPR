@@ -1,11 +1,9 @@
 from keras.datasets import mnist
 import matplotlib.pyplot as plt
-from ImageUtility import display_Set, relation_Figure
-import random
 import seaborn as sb
 import numpy as np
-import time
-import ot
+from ImageUtility import relation_Figure
+import ot, time, random
 
 print("MNIST loading...")
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
