@@ -2,37 +2,13 @@ from keras.datasets import mnist
 import matplotlib.pyplot as plt
 import seaborn as sb
 import numpy as np
+import random
 from ImageUtility import relation_Figure
-import ot, time, random
+from OptimalTransport import POT
 
 print("MNIST loading...")
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
 print("loaded")
-
-def POT(comp_Image, Image, reg):
-    
-    # get sets of significant points
-    a = np.argwhere(comp_Image > 0)
-    b = np.argwhere(Image > 0)
-    
-    SA = comp_Image[a[:, 0], a[:, 1]]
-    SA = SA / np.sum(SA)
-    
-    DB = Image[b[:, 0], b[:, 1]]
-    DB = DB / np.sum(DB)
-            
-    # calculate transport plan and cost using POT
-    start_time = time.time()
-    cost_Matrix = ot.dist(a, b, 'sqeuclidean')
-    cost_Matrix = cost_Matrix / np.max(cost_Matrix)
-    transport_Plan = ot.emd(SA, DB, cost_Matrix, reg)
-    cost = ot.emd2(SA, DB, cost_Matrix, transport_Plan)
-    
-    end_time = time.time()
-    total_time = end_time - start_time
-    
-    return a, b, cost, total_time, transport_Plan
-    
 
 # returns a set of random images associated with the respective answer
 def random_Comparison_Set(set_Images, set_Answer):
