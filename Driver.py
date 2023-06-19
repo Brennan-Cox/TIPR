@@ -9,6 +9,7 @@ import random
 from ImageUtility import relation_Figure
 from ParticleSwarm import optimal_sample_transform
 from OptimalTransport import POT
+from tqdm import tqdm
 
 print("MNIST loading...")
 (x_train, y_train), (x_test, y_test) = mnist.load_data()
@@ -73,11 +74,11 @@ def suppress_stdout():
         # Restore the original standard output
         sys.stdout = old_stdout
 
-def testOT(cases, trails_per_case, isPlot, reg):
+def testOT(cases, trials_per_case, isPlot, reg):
     data = []
     for i in range(cases):
         totalCorrect = 0
-        testCases = trails_per_case
+        testCases = trials_per_case
         comparison_Set = random_Comparison_Set(x_test, y_test)
         for i in range(testCases):
             
@@ -100,14 +101,14 @@ def testOT(cases, trails_per_case, isPlot, reg):
     plt.title(string)
     print(string)
 
-def testPSO(cases, trails_per_case, isPlot, reg):
+def testPSO(cases, trials_per_case, isPlot, reg):
     data = []
-    progress = 0
+    progressBar = tqdm(total=cases * trials_per_case, desc='testPSO')
     for i in range(cases):
         totalCorrect = 0
-        testCases = trails_per_case
+        testCases = trials_per_case
         comparison_Set = random_Comparison_Set(x_test, y_test)
-        for i in range(testCases):
+        for j in range(testCases):
             
             rand_Image, rand_Answer = random_Image(x_train, y_train)
             with suppress_stdout():
@@ -119,10 +120,7 @@ def testPSO(cases, trails_per_case, isPlot, reg):
             
             if (isPlot):
                 relation_Figure(comparison_Set, transformed, rand_Answer, classified_As, relations)
-            
-            progress += 1
-            print(progress / (cases * trails_per_case))
-                
+            progressBar.update(1)
         accuracy = totalCorrect / testCases * 100
         data.append(accuracy)
     sb.displot(data, kde=True, bins=cases)
