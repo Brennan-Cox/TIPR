@@ -4,6 +4,22 @@ from PIL import Image
 import matplotlib.pyplot as plt
 import inflect
 
+def image_Points_Intensities(image):
+    """
+    Takes an image and returns the points of the image and
+    the intensities for each respective point
+    
+    Please note that images are stored in y, x format
+
+    Args:
+        image (array-like image): source image
+    """
+    a = np.argwhere(image > 0)
+        
+    SA = image[a[:, 0], a[:, 1]]
+    SA = SA / np.sum(SA)
+    return a, SA
+
 #if image is not already grayscale will convert and return converted
 def image_To_GrayScale(image):
     if len(image.shape) > 2:

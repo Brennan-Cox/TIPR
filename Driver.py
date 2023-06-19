@@ -4,6 +4,7 @@ import seaborn as sb
 import numpy as np
 import random
 from ImageUtility import relation_Figure
+from ParticleSwarm import optimal_sample_transform
 from OptimalTransport import POT
 
 print("MNIST loading...")
@@ -87,4 +88,14 @@ def test(cases, trails_per_case, isPlot, reg):
     print(string)
     return accuracy
 
-test(1, 1, True, 1e-4)
+# test(1, 1, True, 1e-4)
+
+print('just OT')
+set = random_Comparison_Set(x_test, y_test)
+sample, answer = random_Image(x_train, y_train)
+classified_As, relations = classify_Image(set, sample, 1e-4)
+relation_Figure(set, sample, answer == classified_As, relations)
+print('PSO')
+transformed = optimal_sample_transform(set, sample)
+classified_As, relations = classify_Image(set, transformed, 1e-4)
+relation_Figure(set, transformed, answer == classified_As, relations)

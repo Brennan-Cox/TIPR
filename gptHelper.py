@@ -73,3 +73,50 @@ axs[1].plot(transformed_points[:, 1], transformed_points[:, 0], 'ro', markersize
 
 plt.tight_layout()
 plt.show()
+
+    
+
+import numpy as np
+import matplotlib.pyplot as plt
+from keras.datasets import mnist
+
+(x_train, y_train), (x_test, y_test) = mnist.load_data()
+# Define the image points and pixel intensities
+image = x_train[0]
+image_points = np.argwhere(image > 0)
+pixel_intensities = image[image_points[:, 0], image_points[:, 1]]
+points = np.array(image_points)
+
+# Define the rotation angle in degrees
+angle = 90  # Example: rotate by 45 degrees
+
+# Convert the angle to radians
+theta = np.radians(angle)
+
+# Define the rotation matrix
+rotation_matrix = np.array([[np.cos(theta), -np.sin(theta)],
+                            [np.sin(theta), np.cos(theta)]])
+
+# Apply the rotation to the image points
+rotated_points = np.dot(points, rotation_matrix.T)
+
+# Retrieve the rotated image points
+rotated_image_points = rotated_points.tolist()
+
+# Create a figure with two subplots
+fig, (ax1, ax2) = plt.subplots(1, 2, figsize=(10, 5))
+
+# Plot the original image
+ax1.scatter(*zip(*image_points), cmap='gray')
+ax1.set_title('Original Image')
+
+# Plot the rotated image
+ax2.scatter(*zip(*rotated_image_points), cmap='gray')
+ax2.set_title('Rotated Image')
+
+# Set the aspect ratio to 'equal' for both subplots
+ax1.set_aspect('equal')
+ax2.set_aspect('equal')
+
+# Show the plot
+plt.show()
