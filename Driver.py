@@ -1,3 +1,6 @@
+from contextlib import contextmanager
+from io import StringIO
+import sys
 from keras.datasets import mnist
 import matplotlib.pyplot as plt
 import seaborn as sb
@@ -59,8 +62,18 @@ def classify_Image(comparison_Set, Image, reg):
         relations.append([total_time, cost, transport_Plan, a, b])
     return best_Candidate, relations
 
+@contextmanager
+def suppress_stdout():
+    # Create a StringIO object to capture the output
+    old_stdout = sys.stdout
+    sys.stdout = StringIO()
+    try:
+        yield
+    finally:
+        # Restore the original standard output
+        sys.stdout = old_stdout
 
-def test(cases, trails_per_case, isPlot, reg):
+def testOT(cases, trails_per_case, isPlot, reg):
     data = []
     for i in range(cases):
         totalCorrect = 0
@@ -75,7 +88,7 @@ def test(cases, trails_per_case, isPlot, reg):
                 totalCorrect = totalCorrect + 1
             
             if (isPlot):
-                relation_Figure(comparison_Set, rand_Image, rand_Answer == classified_As, relations)
+                relation_Figure(comparison_Set, rand_Image, rand_Answer, classified_As, relations)
                 
         accuracy = totalCorrect / testCases * 100
         data.append(accuracy)
@@ -86,16 +99,34 @@ def test(cases, trails_per_case, isPlot, reg):
     string += '\nReg {}'.format(reg)
     plt.title(string)
     print(string)
-    return accuracy
 
-# test(1, 1, True, 1e-4)
+def testPSO(cases, trails_per_case, isPlot, reg):
+    data = []
+    for i in range(cases):
+        totalCorrect = 0
+        testCases = trails_per_case
+        comparison_Set = random_Comparison_Set(x_test, y_test)
+        for i in range(testCases):
+            
+            rand_Image, rand_Answer = random_Image(x_train, y_train)
+            with suppress_stdout():
+                transformed = optimal_sample_transform(comparison_Set, rand_Image)
+            classified_As, relations = classify_Image(comparison_Set, transformed, reg)
+            
+            if (rand_Answer == classified_As):
+                totalCorrect = totalCorrect + 1
+            
+            if (isPlot):
+                relation_Figure(comparison_Set, transformed, rand_Answer, classified_As, relations)
+                
+        accuracy = totalCorrect / testCases * 100
+        data.append(accuracy)
+    sb.displot(data, kde=True, bins=cases)
+    
+    accuracy = np.sum(data) / cases
+    string = "Accuracy of OT is {}%".format(accuracy)
+    string += '\nReg {}'.format(reg)
+    plt.title(string)
+    print(string)
 
-print('just OT')
-set = random_Comparison_Set(x_test, y_test)
-sample, answer = random_Image(x_train, y_train)
-classified_As, relations = classify_Image(set, sample, 1e-4)
-relation_Figure(set, sample, answer == classified_As, relations)
-print('PSO')
-transformed = optimal_sample_transform(set, sample)
-classified_As, relations = classify_Image(set, transformed, 1e-4)
-relation_Figure(set, transformed, answer == classified_As, relations)
+testPSO(30, 30, False, 1e-4)

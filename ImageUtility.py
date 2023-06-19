@@ -2,6 +2,7 @@ import cv2
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
+import matplotlib.patches as patches
 import inflect
 
 def image_Points_Intensities(image):
@@ -68,7 +69,7 @@ def image_To_Outline(img):
     return cv2.filter2D(src=img, ddepth=-1, kernel=outline)
 
 # displays the relation figure where an image was procecced
-def relation_Figure(comparison_Set, rand_Image, correct, relations):
+def relation_Figure(comparison_Set, rand_Image, answer, classified, relations):
     
     #size of figure
     fig, axs = plt.subplots(int((len(comparison_Set) + 2) / 2), 2)
@@ -83,7 +84,11 @@ def relation_Figure(comparison_Set, rand_Image, correct, relations):
     num_to_word = inflect.engine()
     for i in range(len(comparison_Set)):
         subplot = axs[row, column]
-        subplot.set_title(num_to_word.number_to_words(i))
+        title = ''
+        if (i == classified):
+            title = 'Classified as: '
+        title += num_to_word.number_to_words(i)
+        subplot.set_title(title)
         column += 1
         if (column == 2):
             row += 1
@@ -96,7 +101,7 @@ def relation_Figure(comparison_Set, rand_Image, correct, relations):
             for j in range(len(b)):
                 if (transport_Plan[i, j] > 0):
                     subplot.plot([a[i, 1], b[j, 1] + x_Offset], [a[i, 0], b[j, 0]], linewidth=0.1)
-    if (correct):
+    if (answer == classified):
         fig.set_facecolor("green")
     else:
         fig.set_facecolor("red")

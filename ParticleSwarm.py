@@ -27,7 +27,7 @@ def optimal_sample_transform(comp_set, sample_image):
     lb = [-45]
     ub = [45]
     
-    xopt, fopt = pyswarm.pso(objective_function, lb, ub, args=(comp_set_extracted, sample_image), debug=True, minfunc=1e-4, minstep=0.1)
+    xopt, fopt = pyswarm.pso(objective_function, lb, ub, args=(comp_set_extracted, sample_image), minfunc=1e-4, minstep=0.1, swarmsize=10)
     return apply_transformations(xopt, sample_image)
     
 def objective_function(x, set, image):
