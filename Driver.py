@@ -102,6 +102,7 @@ def testOT(cases, trails_per_case, isPlot, reg):
 
 def testPSO(cases, trails_per_case, isPlot, reg):
     data = []
+    progress = 0
     for i in range(cases):
         totalCorrect = 0
         testCases = trails_per_case
@@ -118,6 +119,9 @@ def testPSO(cases, trails_per_case, isPlot, reg):
             
             if (isPlot):
                 relation_Figure(comparison_Set, transformed, rand_Answer, classified_As, relations)
+            
+            progress += 1
+            print(progress / (cases * trails_per_case))
                 
         accuracy = totalCorrect / testCases * 100
         data.append(accuracy)
