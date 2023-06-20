@@ -76,7 +76,7 @@ def relation_Figure(comparison_Set, rand_Image, answer, classified, relations):
     fig.subplots_adjust(top=3.0, hspace=0)
     axs[0, 0].set_title("Comparison Set")
     display_Set(axs[0, 0], comparison_Set)
-    axs[0, 1].set_title("Image to identify")
+    axs[0, 1].set_title("Image to identify {}".format(answer))
     axs[0, 1].imshow(rand_Image, cmap="gray")
     #automatic number to word and indexing
     row = 1

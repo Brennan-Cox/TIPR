@@ -74,33 +74,6 @@ def suppress_stdout():
         # Restore the original standard output
         sys.stdout = old_stdout
 
-def testOT(cases, trials_per_case, isPlot, reg):
-    data = []
-    for i in range(cases):
-        totalCorrect = 0
-        testCases = trials_per_case
-        comparison_Set = random_Comparison_Set(x_test, y_test)
-        for i in range(testCases):
-            
-            rand_Image, rand_Answer = random_Image(x_train, y_train)
-            classified_As, relations = classify_Image(comparison_Set, rand_Image, reg)
-            
-            if (rand_Answer == classified_As):
-                totalCorrect = totalCorrect + 1
-            
-            if (isPlot):
-                relation_Figure(comparison_Set, rand_Image, rand_Answer, classified_As, relations)
-                
-        accuracy = totalCorrect / testCases * 100
-        data.append(accuracy)
-    sb.displot(data, kde=True, bins=cases)
-    
-    accuracy = np.sum(data) / cases
-    string = "Accuracy of OT is {}%".format(accuracy)
-    string += '\nReg {}'.format(reg)
-    plt.title(string)
-    print(string)
-
 def testPSO(cases, trials_per_case, isPlot, reg):
     data = []
     progressBar = tqdm(total=cases * trials_per_case, desc='testPSO')
@@ -129,6 +102,5 @@ def testPSO(cases, trials_per_case, isPlot, reg):
     string = "Accuracy of OT is {}%".format(accuracy)
     string += '\nReg {}'.format(reg)
     plt.title(string)
-    print(string)
 
 testPSO(30, 30, False, 1e-4)

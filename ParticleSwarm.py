@@ -1,10 +1,10 @@
 import pyswarm
-import numpy as np
 from OptimalTransport import POT_Parameterized
 from ImageUtility import image_Points_Intensities
 import cv2
-import matplotlib.pyplot as plt
 from keras.datasets import mnist
+import matplotlib.pyplot as plt
+import numpy as np
 
 def optimal_sample_transform(comp_set, sample_image):
     """
@@ -24,10 +24,14 @@ def optimal_sample_transform(comp_set, sample_image):
     for image in comp_set:
         comp_set_extracted.append(image_Points_Intensities(image))
         
-    lb = [-45]
-    ub = [45]
+    translateLimit = 0.25
+    lb = [-45, -translateLimit, -translateLimit]
+    ub = [45, translateLimit, translateLimit]
     
-    xopt, fopt = pyswarm.pso(objective_function, lb, ub, args=(comp_set_extracted, sample_image), minfunc=1e-4, minstep=0.1, swarmsize=10)
+    xopt, fopt = pyswarm.pso(objective_function, lb, ub, 
+                             args=(comp_set_extracted, sample_image), 
+                             minfunc=1e-4, minstep=1e-4, swarmsize=10, 
+                             maxiter=100, debug=False)
     return apply_transformations(xopt, sample_image)
     
 def objective_function(x, set, image):
@@ -61,5 +65,12 @@ def apply_transformations(x, image):
     angle = x[0]
     height, width = image.shape[:2]
     center = (width / 2, height / 2)
+    X_translation = x[1] * width
+    Y_translation = x[2] * height
+    
     rotation_matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
-    return cv2.warpAffine(image, rotation_matrix, (width, height))
+    rotated_image = cv2.warpAffine(image, rotation_matrix, (width, height))
+    
+    translation_matrix = np.float32([[1, 0, X_translation], [0, 1, Y_translation]])
+    translated_image = cv2.warpAffine(rotated_image, translation_matrix, (width, height))
+    return translated_image
