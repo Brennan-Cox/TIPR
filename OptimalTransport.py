@@ -40,6 +40,9 @@ def POT_Parameterized(a, b, SA, DB, reg):
         total_time (number): the time OT took to find min distance
         transport_plan (array-like): transport plan for the given cost
     """
+    if (len(a) == 0 or len(b) == 0):
+        return a, b, float('infinity'), 0, []
+    
     start_time = time.time()
     cost_Matrix = ot.dist(a, b, 'sqeuclidean')
     cost_Matrix = cost_Matrix / np.max(cost_Matrix)

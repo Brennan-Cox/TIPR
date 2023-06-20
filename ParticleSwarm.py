@@ -25,13 +25,16 @@ def optimal_sample_transform(comp_set, sample_image):
         comp_set_extracted.append(image_Points_Intensities(image))
         
     translateLimit = 0.25
-    lb = [-45, -translateLimit, -translateLimit]
-    ub = [45, translateLimit, translateLimit]
+    lb = [-45, -translateLimit, -translateLimit, 0.5, 0.5]
+    ub = [45, translateLimit, translateLimit, 1, 1]
     
     xopt, fopt = pyswarm.pso(objective_function, lb, ub, 
                              args=(comp_set_extracted, sample_image), 
-                             minfunc=1e-4, minstep=1e-4, swarmsize=10, 
+                             minfunc=1e-4, minstep=1e-4, swarmsize=20, 
                              maxiter=100, debug=False)
+    original_cost = objective_function([0, 0, 0, 1, 1], comp_set_extracted, sample_image)
+    if (original_cost < fopt):
+        return sample_image
     return apply_transformations(xopt, sample_image)
     
 def objective_function(x, set, image):
@@ -67,10 +70,23 @@ def apply_transformations(x, image):
     center = (width / 2, height / 2)
     X_translation = x[1] * width
     Y_translation = x[2] * height
+    X_scale = x[3]
+    Y_scale = x[4]
     
     rotation_matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
-    rotated_image = cv2.warpAffine(image, rotation_matrix, (width, height))
+    image = cv2.warpAffine(image, rotation_matrix, (width, height))
     
     translation_matrix = np.float32([[1, 0, X_translation], [0, 1, Y_translation]])
-    translated_image = cv2.warpAffine(rotated_image, translation_matrix, (width, height))
-    return translated_image
+    image = cv2.warpAffine(image, translation_matrix, (width, height))
+    
+    scale_matrix = np.float32([[X_scale, 0, 0], [0, Y_scale, 0]])
+    image = cv2.warpAffine(image, scale_matrix, (width, height))
+    
+    return image
+
+# (x_train, y_train), (x_test, y_test) = mnist.load_data()
+# image = x_test[0]
+# trans = apply_transformations([0, 0, 0, 0.5, 0.5], image)
+# fig, axs = plt.subplots(2)
+# axs[0].imshow(image, cmap='gray')
+# axs[1].imshow(trans, cmap='gray')

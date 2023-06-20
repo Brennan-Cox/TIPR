@@ -69,17 +69,20 @@ def image_To_Outline(img):
     return cv2.filter2D(src=img, ddepth=-1, kernel=outline)
 
 # displays the relation figure where an image was procecced
-def relation_Figure(comparison_Set, rand_Image, answer, classified, relations):
+def relation_Figure(comparison_Set, rand_Image, original, answer, classified, relations):
     
     #size of figure
-    fig, axs = plt.subplots(int((len(comparison_Set) + 2) / 2), 2)
+    fig, axs = plt.subplots(int((len(comparison_Set) + 2) / 2 + 1), 2)
     fig.subplots_adjust(top=3.0, hspace=0)
     axs[0, 0].set_title("Comparison Set")
+    axs[0, 1].remove()
     display_Set(axs[0, 0], comparison_Set)
-    axs[0, 1].set_title("Image to identify {}".format(answer))
-    axs[0, 1].imshow(rand_Image, cmap="gray")
+    axs[1, 0].set_title("Image to identify {}".format(answer))
+    axs[1, 0].imshow(original, cmap="gray")
+    axs[1, 1].set_title('Tranformation')
+    axs[1, 1].imshow(rand_Image, cmap='gray')
     #automatic number to word and indexing
-    row = 1
+    row = 2
     column = 0
     num_to_word = inflect.engine()
     for i in range(len(comparison_Set)):

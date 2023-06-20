@@ -92,7 +92,9 @@ def testPSO(cases, trials_per_case, isPlot, reg):
                 totalCorrect = totalCorrect + 1
             
             if (isPlot):
-                relation_Figure(comparison_Set, transformed, rand_Answer, classified_As, relations)
+                relation_Figure(comparison_Set, transformed, rand_Image, rand_Answer, classified_As, relations)
+                classified_As, relations = classify_Image(comparison_Set, rand_Image, reg)
+                relation_Figure(comparison_Set, rand_Image, rand_Image, rand_Answer, classified_As, relations)
             progressBar.update(1)
         accuracy = totalCorrect / testCases * 100
         data.append(accuracy)
