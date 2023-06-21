@@ -25,14 +25,15 @@ def optimal_sample_transform(comp_set, sample_image):
         comp_set_extracted.append(image_Points_Intensities(image))
         
     translateLimit = 0.25
-    lb = [-45, -translateLimit, -translateLimit, 0.8, 0.8]
-    ub = [45, translateLimit, translateLimit, 1.2, 1.2]
+    shearLimit = 0.5
+    lb = [-90, -translateLimit, -translateLimit, 0.75, 0.75, -shearLimit, -shearLimit]
+    ub = [90, translateLimit, translateLimit, 1.15, 1.15, shearLimit, shearLimit]
     
     xopt, fopt = pyswarm.pso(objective_function, lb, ub, 
                              args=(comp_set_extracted, sample_image), 
-                             minfunc=1e-4, minstep=1e-4, swarmsize=20, 
+                             minfunc=1e-5, minstep=1e-4, swarmsize=20, 
                              maxiter=100, debug=True)
-    original_cost = objective_function([0, 0, 0, 1, 1], comp_set_extracted, sample_image)
+    original_cost = objective_function([0, 0, 0, 1, 1, 0, 0], comp_set_extracted, sample_image)
     # best_fopt = float('infinity')
     if (original_cost < fopt):
         return sample_image
@@ -66,29 +67,46 @@ def objective_function(x, set, image):
     return minimum_cost
     
 def apply_transformations(x, image):
-    angle = x[0]
+    """
+    Applies transformations based on the dimensions of x
+
+    Args:
+        x (list / vector): position of a particle in the swarm
+        image (image): original image to be transformed
+
+    Returns:
+        image (image): transformed image
+    """
     height, width = image.shape[:2]
     center = (width / 2, height / 2)
+    angle = x[0]
     X_translation = x[1] * width
     Y_translation = x[2] * height
     X_scale = x[3]
     Y_scale = x[4]
+    X_shear = x[5]
+    Y_shear = x[6]
     
-    #organize orientation
-    rotation_matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
-    image = cv2.warpAffine(image, rotation_matrix, (width, height))
-    
-    translation_matrix = np.float32([[1, 0, X_translation], [0, 1, Y_translation]])
+    translation_matrix = np.float32([[1, 0, X_translation], 
+                                     [0, 1, Y_translation]])
     image = cv2.warpAffine(image, translation_matrix, (width, height))
     
-    scale_matrix = np.float32([[X_scale, 0, 0], [0, Y_scale, 0]])
+    scale_matrix = np.float32([[X_scale, 0, 0], 
+                               [0, Y_scale, 0]])
     image = cv2.warpAffine(image, scale_matrix, (width, height))
+    
+    shear_matrix = np.float32([[1, X_shear, 0],
+                               [Y_shear, 1, 0]])
+    image = cv2.warpAffine(image, shear_matrix, (width, height))
+    
+    rotation_matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
+    image = cv2.warpAffine(image, rotation_matrix, (width, height))
     
     return image
 
 # (x_train, y_train), (x_test, y_test) = mnist.load_data()
 # image = x_test[0]
-# trans = apply_transformations([0, 0, 0, 1.2, 1.2], image)
+# trans = apply_transformations([0, 0, 0, 0.5, 0.5, 0, 0], image)
 # fig, axs = plt.subplots(2)
 # axs[0].imshow(image, cmap='gray')
 # axs[1].imshow(trans, cmap='gray')

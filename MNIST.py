@@ -29,8 +29,14 @@ def random_Comparison_Set():
             satisfy += 1
     return set
 
-# returns a random image from the given source set and it's corresponding answer
 def random_Image():
+    """
+    returns a random image from the given source set and it's corresponding answer
+
+    Returns:
+        rand_Image (image): a random image chosen from MNIST
+        rand_Answer (number): what pattern the random image is meant to express
+    """
     rand = random.randint(0, len(x_train) - 1)
     rand_Image = x_train[rand]
     rand_Answer = y_train[rand]

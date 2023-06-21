@@ -21,14 +21,30 @@ def image_Points_Intensities(image):
     SA = SA / np.sum(SA)
     return a, SA
 
-#if image is not already grayscale will convert and return converted
 def image_To_GrayScale(image):
+    """
+    if image is not already grayscale will convert and return converted
+
+    Args:
+        image (image): image to convert
+
+    Returns:
+        image (image): image in grayscale
+    """
     if len(image.shape) > 2:
         image = cv2.cvtColor(image, cv2.COLOR_BGR2GRAY)
     return image
 
-#takes an image and returns a list of resultant images with convolutions applied
 def image_To_Convolutions(img):
+    """
+    takes an image and returns a list of resultant images with convolutions applied
+
+    Args:
+        img (image): sample image to calculate convolutions
+
+    Returns:
+        convolutions (list): list of images representing convolutions
+    """
     img = image_To_GrayScale(img)
 
     horizontal = np.array([[-2, -1, -2],
@@ -44,8 +60,14 @@ def image_To_Convolutions(img):
     convolutions.append(cv2.filter2D(src=img, ddepth=-1, kernel=vertical))
     return convolutions
 
-#method will take a set of images and append them together in grayscale
 def display_Set(subplot, set):
+    """
+    method will take a set of images and append them together in grayscale
+
+    Args:
+        subplot (matplotlib.pyplot): a subplot or plot to display a set within
+        set (list): list of images to display
+    """
     height = 0
     width = 0
     for img in set:
@@ -68,9 +90,18 @@ def image_To_Outline(img):
 
     return cv2.filter2D(src=img, ddepth=-1, kernel=outline)
 
-# displays the relation figure where an image was proceed
 def relation_Figure(comparison_Set, rand_Image, original, answer, classified, relations):
-    
+    """
+    displays the relation figure where an image was proceed
+
+    Args:
+        comparison_Set (list): the images used to compare
+        rand_Image (image): the sample image compared
+        original (image): the image before transformation
+        answer (number): the answer on what the image is supposed to be
+        classified (number): what the sample image was defined to be
+        relations (list of list): list of [total_time, cost, transport_Plan, a, b]
+    """
     #size of figure
     fig, axs = plt.subplots(int((len(comparison_Set) + 2) / 2 + 1), 2)
     fig.subplots_adjust(top=3.0, hspace=0)

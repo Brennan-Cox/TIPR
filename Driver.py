@@ -12,6 +12,11 @@ from tqdm import tqdm
 
 @contextmanager
 def suppress_stdout():
+    """
+    Method when combined with (with:)
+    will not let the code within it's section
+    output to standard out
+    """
     # Create a StringIO object to capture the output
     old_stdout = sys.stdout
     sys.stdout = StringIO()
@@ -31,8 +36,8 @@ def testPSO(cases, trials_per_case, isPlot, reg):
         for j in range(testCases):
             
             rand_Image, rand_Answer = random_Image()
-            # with suppress_stdout():
-            transformed = optimal_sample_transform(comparison_Set, rand_Image)
+            with suppress_stdout():
+                transformed = optimal_sample_transform(comparison_Set, rand_Image)
             classified_As, relations = classify_Image(comparison_Set, transformed, reg)
             
             if (rand_Answer == classified_As):
