@@ -35,13 +35,13 @@ def image_To_Convolutions(img):
                        [2, 3, 2],
                        [-2, -1, -2]])
     
-    verticle = np.array([[-2, 2, -2],
+    vertical = np.array([[-2, 2, -2],
                      [-1, 3, -1],
                      [-2, 2, -2]])
     
     convolutions = []
     convolutions.append(cv2.filter2D(src=img, ddepth=-1, kernel=horizontal))
-    convolutions.append(cv2.filter2D(src=img, ddepth=-1, kernel=verticle))
+    convolutions.append(cv2.filter2D(src=img, ddepth=-1, kernel=vertical))
     return convolutions
 
 #method will take a set of images and append them together in grayscale
@@ -68,7 +68,7 @@ def image_To_Outline(img):
 
     return cv2.filter2D(src=img, ddepth=-1, kernel=outline)
 
-# displays the relation figure where an image was procecced
+# displays the relation figure where an image was proceed
 def relation_Figure(comparison_Set, rand_Image, original, answer, classified, relations):
     
     #size of figure
@@ -79,7 +79,7 @@ def relation_Figure(comparison_Set, rand_Image, original, answer, classified, re
     display_Set(axs[0, 0], comparison_Set)
     axs[1, 0].set_title("Image to identify {}".format(answer))
     axs[1, 0].imshow(original, cmap="gray")
-    axs[1, 1].set_title('Tranformation')
+    axs[1, 1].set_title('Transformation')
     axs[1, 1].imshow(rand_Image, cmap='gray')
     #automatic number to word and indexing
     row = 2

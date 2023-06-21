@@ -25,14 +25,15 @@ def optimal_sample_transform(comp_set, sample_image):
         comp_set_extracted.append(image_Points_Intensities(image))
         
     translateLimit = 0.25
-    lb = [-45, -translateLimit, -translateLimit, 0.5, 0.5]
-    ub = [45, translateLimit, translateLimit, 1, 1]
+    lb = [-45, -translateLimit, -translateLimit, 0.8, 0.8]
+    ub = [45, translateLimit, translateLimit, 1.2, 1.2]
     
     xopt, fopt = pyswarm.pso(objective_function, lb, ub, 
                              args=(comp_set_extracted, sample_image), 
                              minfunc=1e-4, minstep=1e-4, swarmsize=20, 
-                             maxiter=100, debug=False)
+                             maxiter=100, debug=True)
     original_cost = objective_function([0, 0, 0, 1, 1], comp_set_extracted, sample_image)
+    # best_fopt = float('infinity')
     if (original_cost < fopt):
         return sample_image
     return apply_transformations(xopt, sample_image)
@@ -73,6 +74,7 @@ def apply_transformations(x, image):
     X_scale = x[3]
     Y_scale = x[4]
     
+    #organize orientation
     rotation_matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
     image = cv2.warpAffine(image, rotation_matrix, (width, height))
     
@@ -86,7 +88,7 @@ def apply_transformations(x, image):
 
 # (x_train, y_train), (x_test, y_test) = mnist.load_data()
 # image = x_test[0]
-# trans = apply_transformations([0, 0, 0, 0.5, 0.5], image)
+# trans = apply_transformations([0, 0, 0, 1.2, 1.2], image)
 # fig, axs = plt.subplots(2)
 # axs[0].imshow(image, cmap='gray')
 # axs[1].imshow(trans, cmap='gray')

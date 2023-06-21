@@ -53,3 +53,38 @@ def POT_Parameterized(a, b, SA, DB, reg):
     total_time = end_time - start_time
     
     return a, b, cost, total_time, transport_Plan
+
+def classify_Image(comparison_Set, Image, reg):
+    """
+    takes a comp set, image, regularization parameter
+    returns the best candidate for the given image, and a list of relations
+    between that image and each that it was compared to
+    relations have relation per index (positional)
+
+    Args:
+        comparison_Set (array-like set of images): images as comparisons to image
+        Image (image): sample image to compare
+        reg (number): regularization parameter
+
+    Returns:
+        best_Candidate (number): the number that the sample image was classified as
+        relations (array-like set of tuples): relation has time, cost, plan, a, b
+    """
+    
+    relations = []
+    
+    best_Distance = float('inf')
+    best_Candidate = 0
+    for i in range(len(comparison_Set)):
+        
+        comp_Image = comparison_Set[i]
+        
+        a, b, cost, total_time, transport_Plan = POT(comp_Image, Image, reg)
+        
+        # find lowest cost transport plan
+        if (cost < best_Distance):
+            best_Distance = cost
+            best_Candidate = i
+            
+        relations.append([total_time, cost, transport_Plan, a, b])
+    return best_Candidate, relations
