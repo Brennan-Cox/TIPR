@@ -32,7 +32,7 @@ def optimal_sample_transform(comp_set, sample_image):
     xopt, fopt = pyswarm.pso(objective_function, lb, ub, 
                              args=(comp_set_extracted, sample_image), 
                              minfunc=1e-5, minstep=1e-4, swarmsize=20, 
-                             maxiter=100, debug=True)
+                             maxiter=100, debug=False)
     original_cost = objective_function([0, 0, 0, 1, 1, 0, 0], comp_set_extracted, sample_image)
     # best_fopt = float('infinity')
     if (original_cost < fopt):
