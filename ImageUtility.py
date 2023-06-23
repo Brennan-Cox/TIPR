@@ -1,9 +1,8 @@
-import cv2
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
-import matplotlib.patches as patches
-import inflect
+from PIL import ImageFont, Image, ImageDraw
+import random, os, inflect, cv2
 
 def image_Points_Intensities(image):
     """
@@ -128,14 +127,87 @@ def relation_Figure(comparison_Set, rand_Image, original, answer, classified, re
             row += 1
             column = 0
         total_time, cost, transport_Plan, a, b = relations[i]
-        subplot.set_xlabel("Calculation took {}s\nWith cost of {}".format(round(total_time, 4), cost))
+        subplot.set_xlabel("Calculation took {}s\nWith cost of {}"
+                           .format(round(total_time, 4), cost))
         display_Set(subplot, [comparison_Set[i], rand_Image])
         x_Offset = rand_Image.shape[1]
         for i in range(len(a)):
             for j in range(len(b)):
                 if (transport_Plan[i, j] > 0):
-                    subplot.plot([a[i, 1], b[j, 1] + x_Offset], [a[i, 0], b[j, 0]], linewidth=0.1)
+                    subplot.plot([a[i, 1], b[j, 1] + x_Offset], 
+                                 [a[i, 0], b[j, 0]], linewidth=0.1)
     if (answer == classified):
         fig.set_facecolor("green")
     else:
         fig.set_facecolor("red")
+        
+# Fonts can be downloaded at https://github.com/davidstutz/disentangling-robustness-generalization
+# Fonts without MetaData were excluded
+# Note that the directories were deleted for lack of usefulness:
+# fonts\fonts-master\vis
+
+def read_font(fn, characters, size=28):
+    """
+    From: https://davidstutz.de/fonts-a-synthetic-mnist-like-dataset-with-known-manifold/
+    Read a font file and generate all letters as images.
+ 
+    :param fn: path to font file as TTF
+    :param characters: desired characters to generate
+    :param size: desired resolution where resolution is size^2
+    :return: images
+    :rtype: numpy.ndarray
+    """
+    
+    points = size - size/4
+    font = ImageFont.truetype(fn, int(points))
+ 
+    data = []
+    for char in characters:
+        # new grayscale image all white
+        img = Image.new('L', (size, size), 255)
+        draw = ImageDraw.Draw(img)
+        # get dimensions of the character
+        textsize = draw.textbbox((0, 0), text=char, font=font)
+        # get center
+        text_x = (size - textsize[2] - textsize[0]) // 2
+        text_y = (size - textsize[3] - textsize[1]) // 2
+        # draw image in center
+        draw.text((text_x, text_y), char, font=font)
+ 
+        # convert to np matrix
+        matrix = np.array(img)
+        # invert
+        matrix = 255 - matrix
+        # append
+        data.append(matrix)
+ 
+    return np.array(data)
+
+def get_random_font_path(directory):
+    """
+    Method that will get all .ttf files in the given directory
+    and return a random occurrence
+
+    Args:
+        directory (string): directory to search
+
+    Returns:
+        string: relative path to chosen .ttf file
+    """
+    ttf_files = []
+    for root, dir, files in os.walk(directory):
+        if 'METADATA.pb' in files:
+            for file in files:
+                if file.endswith(".ttf"):
+                    ttf_files.append(os.path.join(root, file))
+    
+    if not ttf_files:
+        return None
+    
+    random_font_path = random.choice(ttf_files)
+    return os.path.relpath(random_font_path, directory)
+
+path = get_random_font_path('./fonts')
+print(path)
+images = read_font('./fonts/' + path, '0123456789')
+display_Set(plt, images)
