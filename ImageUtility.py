@@ -1,8 +1,7 @@
 import numpy as np
 from PIL import Image
 import matplotlib.pyplot as plt
-from PIL import ImageFont, Image, ImageDraw
-import random, os, inflect, cv2
+import inflect, cv2
 
 def image_Points_Intensities(image):
     """
@@ -141,73 +140,52 @@ def relation_Figure(comparison_Set, rand_Image, original, answer, classified, re
     else:
         fig.set_facecolor("red")
         
-# Fonts can be downloaded at https://github.com/davidstutz/disentangling-robustness-generalization
-# Fonts without MetaData were excluded
-# Note that the directories were deleted for lack of usefulness:
-# fonts\fonts-master\vis
-
-def read_font(fn, characters, size=28):
+#### VECTORS OF TRANSFORMATION ####
+scaleLimit = 0.10
+rotationLimit = np.degrees(np.pi / 6)
+translateLimit = 0.10
+shearLimit = 0.20
+lb = [-rotationLimit, -translateLimit, -translateLimit, -scaleLimit, -scaleLimit, -shearLimit, -shearLimit]
+ub = [rotationLimit, translateLimit, translateLimit, scaleLimit, scaleLimit, shearLimit, shearLimit]
+        
+def apply_transformations(x, image):
     """
-    From: https://davidstutz.de/fonts-a-synthetic-mnist-like-dataset-with-known-manifold/
-    Read a font file and generate all letters as images.
- 
-    :param fn: path to font file as TTF
-    :param characters: desired characters to generate
-    :param size: desired resolution where resolution is size^2
-    :return: images
-    :rtype: numpy.ndarray
-    """
-    
-    points = size - size/4
-    font = ImageFont.truetype(fn, int(points))
- 
-    data = []
-    for char in characters:
-        # new grayscale image all white
-        img = Image.new('L', (size, size), 255)
-        draw = ImageDraw.Draw(img)
-        # get dimensions of the character
-        textsize = draw.textbbox((0, 0), text=char, font=font)
-        # get center
-        text_x = (size - textsize[2] - textsize[0]) // 2
-        text_y = (size - textsize[3] - textsize[1]) // 2
-        # draw image in center
-        draw.text((text_x, text_y), char, font=font)
- 
-        # convert to np matrix
-        matrix = np.array(img)
-        # invert
-        matrix = 255 - matrix
-        # append
-        data.append(matrix)
- 
-    return np.array(data)
-
-def get_random_font_path(directory):
-    """
-    Method that will get all .ttf files in the given directory
-    and return a random occurrence
+    Applies transformations based on the dimensions of x
 
     Args:
-        directory (string): directory to search
+        x (list / vector): position of a particle in the swarm
+        image (image): original image to be transformed
 
     Returns:
-        string: relative path to chosen .ttf file
+        image (image): transformed image
     """
-    ttf_files = []
-    for root, dir, files in os.walk(directory):
-        if 'METADATA.pb' in files:
-            for file in files:
-                if file.endswith(".ttf"):
-                    ttf_files.append(os.path.join(root, file))
+    height, width = image.shape[:2]
+    center = (width / 2, height / 2)
+    angle = x[0]
+    X_translation = x[1] * width
+    Y_translation = x[2] * height
+    X_scale = 1 + x[3]
+    Y_scale = 1 + x[4]
+    X_shear = x[5]
+    Y_shear = x[6]
     
-    if not ttf_files:
-        return None
+    translation_matrix = np.float32([[1, 0, X_translation], 
+                                     [0, 1, Y_translation]])
+    image = cv2.warpAffine(image, translation_matrix, (width, height))
     
-    random_font_path = random.choice(ttf_files)
-    return os.path.relpath(random_font_path, directory)
-
-path = get_random_font_path('./fonts')
-print(path)
-images = read_font('./fonts/' + path, '0123456789')
-display_Set(plt, images)
+    scale_matrix = np.float32([[X_scale, 0, 0], 
+                               [0, Y_scale, 0]])
+    image = cv2.warpAffine(image, scale_matrix, (width, height))
+    
+    shear_matrix = np.float32([[1, X_shear, 0],
+                               [Y_shear, 1, 0]])
+    image = cv2.warpAffine(image, shear_matrix, (width, height))
+    
+    rotation_matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
+    image = cv2.warpAffine(image, rotation_matrix, (width, height))
+    
+    return image
+        
+# set = get_Random_Set('0123456789')
+# display_Set(plt, set)
+# display_Set(plt, transform_Set(set))

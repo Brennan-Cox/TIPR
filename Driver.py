@@ -8,6 +8,7 @@ from ImageUtility import relation_Figure
 from MNIST import random_Comparison_Set, random_Image
 from OptimalTransport import classify_Image
 from ParticleSwarm import optimal_sample_transform
+from Fonts import get_Random_Set, transform_Set, transform_image
 from tqdm import tqdm
 
 @contextmanager
