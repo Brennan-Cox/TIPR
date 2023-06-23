@@ -4,7 +4,7 @@ import sys
 import matplotlib.pyplot as plt
 import seaborn as sb
 import numpy as np
-from ImageUtility import relation_Figure
+from ImageUtility import display_Set, image_To_Outline, relation_Figure
 # from MNIST import random_Comparison_Set, random_Image
 from OptimalTransport import classify_Image
 from ParticleSwarm import optimal_sample_transform
@@ -37,6 +37,9 @@ def testPSO(cases, trials_per_case, isPlot, reg):
         testCases = trials_per_case
         # Fonts
         original_Set = get_Random_Set()
+        fig, axs = plt.subplots(2)
+        for i in range(len(original_Set)):
+            original_Set[i] = image_To_Outline(original_Set[i])
         comparison_Set = transform_Set(original_Set)
         
         # MNIST
@@ -74,4 +77,4 @@ def testPSO(cases, trials_per_case, isPlot, reg):
     string += '\nReg {}'.format(reg)
     plt.title(string)
 
-testPSO(30, 30, False, 1e-4)
+testPSO(1, 30, False, 1e-4)

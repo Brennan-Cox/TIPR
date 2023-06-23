@@ -15,8 +15,7 @@ def optimal_sample_transform(comp_set, sample_image):
         sample_image (image): variation
     Returns:
         img (array of points): transformed image
-    """
-    
+    """    
     best = 0
     min_cost = float('infinity')
     bestX = []
