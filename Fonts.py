@@ -1,8 +1,9 @@
 from PIL import ImageFont, Image, ImageDraw
 from ImageUtility import lb, ub
 import random, os, numpy as np
-
 from ImageUtility import apply_transformations
+
+print('Running with FONTS')
 
 # Fonts can be downloaded at https://github.com/davidstutz/disentangling-robustness-generalization
 # Fonts without MetaData were excluded

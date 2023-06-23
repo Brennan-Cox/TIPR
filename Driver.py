@@ -5,11 +5,13 @@ import matplotlib.pyplot as plt
 import seaborn as sb
 import numpy as np
 from ImageUtility import relation_Figure
-from MNIST import random_Comparison_Set, random_Image
+# from MNIST import random_Comparison_Set, random_Image
 from OptimalTransport import classify_Image
 from ParticleSwarm import optimal_sample_transform
 from Fonts import get_Random_Set, transform_Set, transform_image
 from tqdm import tqdm
+import random
+import time
 
 @contextmanager
 def suppress_stdout():
@@ -33,18 +35,32 @@ def testPSO(cases, trials_per_case, isPlot, reg):
     for i in range(cases):
         totalCorrect = 0
         testCases = trials_per_case
-        comparison_Set = random_Comparison_Set()
+        # Fonts
+        original_Set = get_Random_Set()
+        comparison_Set = transform_Set(original_Set)
+        
+        # MNIST
+        # comparison_Set = random_Comparison_Set()
         for j in range(testCases):
             
-            rand_Image, rand_Answer = random_Image()
-            with suppress_stdout():
-                transformed = optimal_sample_transform(comparison_Set, rand_Image)
-            classified_As, relations = classify_Image(comparison_Set, transformed, reg)
+            #Fonts
+            rand_Answer = random.randint(0, len(original_Set) - 1)
+            rand_Image = transform_image(original_Set[rand_Answer])
             
+            # MNIST
+            # rand_Image, rand_Answer = random_Image()
+            
+            # PSO
+            start = time.time()
+            with suppress_stdout():
+                transformed, classified_As = optimal_sample_transform(comparison_Set, rand_Image)
+            print('PSO took {}s'.format(time.time() - start))
+                        
             if (rand_Answer == classified_As):
                 totalCorrect = totalCorrect + 1
             
             if (isPlot):
+                classified_As, relations = classify_Image(comparison_Set, transformed, reg)
                 relation_Figure(comparison_Set, transformed, rand_Image, rand_Answer, classified_As, relations)
                 # classified_As, relations = classify_Image(comparison_Set, rand_Image, reg)
                 # relation_Figure(comparison_Set, rand_Image, rand_Image, rand_Answer, classified_As, relations)
