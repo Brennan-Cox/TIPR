@@ -54,7 +54,7 @@ def POT_Parameterized(a, b, SA, DB, reg):
     
     return a, b, cost, total_time, transport_Plan
 
-def classify_Image(comparison_Set, Image, reg):
+def classify_Image(comparison_Set, transformed_Images, reg):
     """
     takes a comp set, image, regularization parameter
     returns the best candidate for the given image, and a list of relations
@@ -78,6 +78,7 @@ def classify_Image(comparison_Set, Image, reg):
     for i in range(len(comparison_Set)):
         
         comp_Image = comparison_Set[i]
+        Image = transformed_Images[i]
         
         a, b, cost, total_time, transport_Plan = POT(comp_Image, Image, reg)
         

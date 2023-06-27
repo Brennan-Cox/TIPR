@@ -14,23 +14,25 @@ def optimal_sample_transform(comp_set, sample_image):
         comp_set (list of images): original forms
         sample_image (image): variation
     Returns:
-        img (array of points): transformed image
+        best_images (array of images): best transformations obtained
+        min_answer (number): the candidate sample was identified as
     """    
-    best = 0
-    min_cost = float('infinity')
-    bestX = []
+    
+    best_images = []
+    min_score = float('infinity')
+    min_answer = 0
     # fit to each pattern
     for i in range(len(comp_set)):
         xopt, fopt = pyswarm.pso(objective_function, lb, ub, 
                              args=(image_Points_Intensities(comp_set[i]), sample_image), 
                              minfunc=1e-4, minstep=1e-4, swarmsize=10, 
                              maxiter=100, debug=False)
-        if (fopt < min_cost):
-            best = i
-            min_cost = fopt
-            bestX = xopt
-            
-    return apply_transformations(bestX, sample_image), best
+        if (min_score > fopt):
+            min_answer = i
+            min_score = fopt
+        best_images.append(apply_transformations(xopt, sample_image))
+    
+    return best_images, min_answer
     
 def objective_function(x, comp_extract, image):
     """

@@ -1,7 +1,8 @@
 from PIL import ImageFont, Image, ImageDraw
-from ImageUtility import lb, ub
+from ImageUtility import apply_transformations_Reverse, display_Set, lb, ub
 import random, os, numpy as np
 from ImageUtility import apply_transformations
+import matplotlib.pyplot as plt
 
 print('Running with FONTS')
 
@@ -49,6 +50,7 @@ def read_font(fn, characters, size=28):
 
 def get_random_font_path(directory):
     """
+    omitted non metadata.pb directories because no numbers
     Method that will get all .ttf files in the given directory
     and return a random occurrence
 
@@ -100,6 +102,18 @@ def transform_image(image):
     """
     return apply_transformations(generate_random_set(lb, ub), image)
 
+def transform_image_Reverse(image):
+    """
+    applies random transformation to an image
+
+    Args:
+        image (image): image to be transformed
+
+    Returns:
+        image: randomly transformed
+    """
+    return apply_transformations_Reverse(generate_random_set(lb, ub), image)
+
 def transform_Set(images):
     """
     applies a random transformation per image in the given set
@@ -132,3 +146,5 @@ def generate_random_set(lower_bound, upper_bound):
         random_element = lower + random.random() * range
         random_set.append(random_element)
     return random_set
+
+# display_Set(plt, get_Random_Set())

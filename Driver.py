@@ -8,7 +8,7 @@ from ImageUtility import display_Set, image_To_Outline, relation_Figure
 # from MNIST import random_Comparison_Set, random_Image
 from OptimalTransport import classify_Image
 from ParticleSwarm import optimal_sample_transform
-from Fonts import get_Random_Set, transform_Set, transform_image
+from Fonts import get_Random_Set, transform_Set, transform_image, transform_image_Reverse
 from tqdm import tqdm
 import random
 import time
@@ -29,7 +29,7 @@ def suppress_stdout():
         # Restore the original standard output
         sys.stdout = old_stdout
 
-def testPSO(cases, trials_per_case, isPlot, reg):
+def testPSO(cases, trials_per_case, display, display_Incorrect, reg):
     data = []
     progressBar = tqdm(total=cases * trials_per_case, desc='testPSO')
     for i in range(cases):
@@ -37,10 +37,10 @@ def testPSO(cases, trials_per_case, isPlot, reg):
         testCases = trials_per_case
         # Fonts
         original_Set = get_Random_Set()
-        fig, axs = plt.subplots(2)
-        for i in range(len(original_Set)):
-            original_Set[i] = image_To_Outline(original_Set[i])
-        comparison_Set = transform_Set(original_Set)
+        # Convolution
+        # for i in range(len(original_Set)):
+        #     original_Set[i] = image_To_Outline(original_Set[i])
+        comparison_Set = original_Set
         
         # MNIST
         # comparison_Set = random_Comparison_Set()
@@ -48,7 +48,7 @@ def testPSO(cases, trials_per_case, isPlot, reg):
             
             #Fonts
             rand_Answer = random.randint(0, len(original_Set) - 1)
-            rand_Image = transform_image(original_Set[rand_Answer])
+            rand_Image = transform_image_Reverse(original_Set[rand_Answer])
             
             # MNIST
             # rand_Image, rand_Answer = random_Image()
@@ -56,15 +56,17 @@ def testPSO(cases, trials_per_case, isPlot, reg):
             # PSO
             # start = time.time()
             with suppress_stdout():
-                transformed, classified_As = optimal_sample_transform(comparison_Set, rand_Image)
+                transformed_Images, classified_As = optimal_sample_transform(comparison_Set, rand_Image)
             # print('PSO took {}s'.format(time.time() - start))
+              
+            correct = rand_Answer == classified_As
                         
-            if (rand_Answer == classified_As):
+            if (correct):
                 totalCorrect = totalCorrect + 1
             
-            if (isPlot):
-                classified_As, relations = classify_Image(comparison_Set, transformed, reg)
-                relation_Figure(comparison_Set, transformed, rand_Image, rand_Answer, classified_As, relations)
+            if (display or (not correct and display_Incorrect)):
+                classified_As, relations = classify_Image(comparison_Set, transformed_Images, reg)
+                relation_Figure(comparison_Set, rand_Image, rand_Answer, transformed_Images, classified_As, relations)
                 # classified_As, relations = classify_Image(comparison_Set, rand_Image, reg)
                 # relation_Figure(comparison_Set, rand_Image, rand_Image, rand_Answer, classified_As, relations)
             progressBar.update(1)
@@ -77,4 +79,4 @@ def testPSO(cases, trials_per_case, isPlot, reg):
     string += '\nReg {}'.format(reg)
     plt.title(string)
 
-testPSO(1, 30, False, 1e-4)
+testPSO(30, 30, display=False, display_Incorrect=False, reg=1e-4)

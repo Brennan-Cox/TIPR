@@ -13,7 +13,7 @@ def image_Points_Intensities(image):
     Args:
         image (array-like image): source image
     """
-    a = np.argwhere(image > 0)
+    a = np.argwhere(image > 10)
         
     SA = image[a[:, 0], a[:, 1]]
     SA = SA / np.sum(SA)
@@ -88,7 +88,7 @@ def image_To_Outline(img):
 
     return cv2.filter2D(src=img, ddepth=-1, kernel=outline)
 
-def relation_Figure(comparison_Set, rand_Image, original, answer, classified, relations):
+def relation_Figure(comparison_Set, image, answer, transformations, classified, relations):
     """
     displays the relation figure where an image was proceed
 
@@ -101,17 +101,17 @@ def relation_Figure(comparison_Set, rand_Image, original, answer, classified, re
         relations (list of list): list of [total_time, cost, transport_Plan, a, b]
     """
     #size of figure
-    fig, axs = plt.subplots(int((len(comparison_Set) + 2) / 2 + 1), 2)
+    fig, axs = plt.subplots(int((len(comparison_Set) + 2) / 2), 2)
     fig.subplots_adjust(top=3.0, hspace=0)
+    
     axs[0, 0].set_title("Comparison Set")
-    axs[0, 1].remove()
     display_Set(axs[0, 0], comparison_Set)
-    axs[1, 0].set_title("Image to identify {}".format(answer))
-    axs[1, 0].imshow(original, cmap="gray")
-    axs[1, 1].set_title('Transformation')
-    axs[1, 1].imshow(rand_Image, cmap='gray')
+    
+    axs[0, 1].set_title("Image to identify {}".format(answer))
+    axs[0, 1].imshow(image, cmap="gray")
+    
     #automatic number to word and indexing
-    row = 2
+    row = 1
     column = 0
     num_to_word = inflect.engine()
     for i in range(len(comparison_Set)):
@@ -128,8 +128,8 @@ def relation_Figure(comparison_Set, rand_Image, original, answer, classified, re
         total_time, cost, transport_Plan, a, b = relations[i]
         subplot.set_xlabel("Calculation took {}s\nWith cost of {}"
                            .format(round(total_time, 4), cost))
-        display_Set(subplot, [comparison_Set[i], rand_Image])
-        x_Offset = rand_Image.shape[1]
+        display_Set(subplot, [comparison_Set[i], transformations[i]])
+        x_Offset = transformations[i].shape[1]
         for i in range(len(a)):
             for j in range(len(b)):
                 if (transport_Plan[i, j] > 0):
@@ -147,6 +147,44 @@ translateLimit = 0.10
 shearLimit = 0.20
 lb = [-rotationLimit, -translateLimit, -translateLimit, -scaleLimit, -scaleLimit, -shearLimit, -shearLimit]
 ub = [rotationLimit, translateLimit, translateLimit, scaleLimit, scaleLimit, shearLimit, shearLimit]
+
+def apply_transformations_Reverse(x, image):
+    """
+    Applies transformations based on the dimensions of x in reverse of namesake
+
+    Args:
+        x (list / vector): position of a particle in the swarm
+        image (image): original image to be transformed
+
+    Returns:
+        image (image): transformed image
+    """
+    height, width = image.shape[:2]
+    center = (width / 2, height / 2)
+    angle = x[0]
+    X_translation = x[1] * width
+    Y_translation = x[2] * height
+    X_scale = 1 + x[3]
+    Y_scale = 1 + x[4]
+    X_shear = x[5]
+    Y_shear = x[6]
+    
+    shear_matrix = np.float32([[1, X_shear, 0],
+                               [Y_shear, 1, 0]])
+    image = cv2.warpAffine(image, shear_matrix, (width, height))
+    
+    scale_matrix = np.float32([[X_scale, 0, 0], 
+                               [0, Y_scale, 0]])
+    image = cv2.warpAffine(image, scale_matrix, (width, height))
+    
+    translation_matrix = np.float32([[1, 0, X_translation], 
+                                     [0, 1, Y_translation]])
+    image = cv2.warpAffine(image, translation_matrix, (width, height))
+    
+    rotation_matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
+    image = cv2.warpAffine(image, rotation_matrix, (width, height))
+    
+    return image
         
 def apply_transformations(x, image):
     """
@@ -169,6 +207,10 @@ def apply_transformations(x, image):
     X_shear = x[5]
     Y_shear = x[6]
     
+    # add rotation axis before scale and shear
+    rotation_matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
+    image = cv2.warpAffine(image, rotation_matrix, (width, height))
+    
     translation_matrix = np.float32([[1, 0, X_translation], 
                                      [0, 1, Y_translation]])
     image = cv2.warpAffine(image, translation_matrix, (width, height))
@@ -180,9 +222,6 @@ def apply_transformations(x, image):
     shear_matrix = np.float32([[1, X_shear, 0],
                                [Y_shear, 1, 0]])
     image = cv2.warpAffine(image, shear_matrix, (width, height))
-    
-    rotation_matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
-    image = cv2.warpAffine(image, rotation_matrix, (width, height))
     
     return image
         
