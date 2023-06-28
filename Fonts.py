@@ -4,6 +4,14 @@ import random, os, numpy as np
 from ImageUtility import apply_transformations
 import matplotlib.pyplot as plt
 
+# @inproceedings{Stutz2019CVPR,
+#   title = {Disentangling Adversarial Robustness and Generalization},
+#   author = {Stutz, David and Hein, Matthias and Schiele, Bernt},
+#   booktitle = {IEEE Conference on Computer Vision and Pattern Recognition (CVPR)},
+#   publisher = {IEEE Computer Society},
+#   year = {2019}
+# }
+
 print('Running with FONTS')
 
 # Fonts can be downloaded at https://github.com/davidstutz/disentangling-robustness-generalization
