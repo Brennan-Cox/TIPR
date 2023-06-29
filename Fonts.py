@@ -138,9 +138,19 @@ def get_Random_Set(characters = '0123456789', size = 28):
     Returns:
         images: array of images
     """
-    path = get_random_font_path('./fonts', characters)
-    images = read_font('./fonts/' + path, characters, size)
-    return images
+    # There is an os issue with some invalid font, must correct
+    # For now this is a valid work around
+    Error = True
+    while(Error):
+        path = get_random_font_path('./fonts', characters)
+        try:
+            images = read_font('./fonts/' + path, characters, size)
+            Error = False
+        except OSError:
+            print('Invalid font stack overflow for characters {}'.format(path))
+            Error = True
+            
+    return images, path
 
 def transform_image(image):
     """

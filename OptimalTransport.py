@@ -1,5 +1,6 @@
 import numpy as np
 import ot, time
+import ot.backend as otb
 from ImageUtility import image_Points_Intensities
 
 def POT(comp_Image, Image, reg):
