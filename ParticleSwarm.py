@@ -25,7 +25,7 @@ def optimal_sample_transform(comp_set, sample_image):
     for i in range(len(comp_set)):
         xopt, fopt = pyswarm.pso(objective_function, lb, ub, 
                              args=(image_Points_Intensities(comp_set[i]), sample_image), 
-                             minfunc=1e-5, minstep=1e-4, swarmsize=10, 
+                             minfunc=1e-4, minstep=1e-4, swarmsize=10, 
                              maxiter=100, debug=False)
         if (min_score > fopt):
             min_answer = i
