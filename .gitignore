@@ -4,3 +4,4 @@ __MACOSX
 figures
 output.txt
 fonts
+__pycache__/ImageUtility.cpython-311.pyc

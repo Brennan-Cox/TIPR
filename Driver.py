@@ -54,8 +54,8 @@ def testPSO(cases, trials_per_case, display, display_Incorrect, reg):
             # rand_Image, rand_Answer = random_Image()
             
             # PSO
-            # with suppress_stdout():
-            transformed_Images, classified_As = optimal_sample_transform(comparison_Set, rand_Image)
+            with suppress_stdout():
+                transformed_Images, classified_As = optimal_sample_transform(comparison_Set, rand_Image)
               
             correct = rand_Answer == classified_As
                         
@@ -75,4 +75,4 @@ def testPSO(cases, trials_per_case, display, display_Incorrect, reg):
     string += '\nReg {}'.format(reg)
     plt.title(string)
 
-testPSO(1, 1, display=False, display_Incorrect=False, reg=1e-4)
+testPSO(30, 30, display=False, display_Incorrect=False, reg=1e-4)
