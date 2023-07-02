@@ -4,9 +4,18 @@
 
 ## Getting started
 
-To make it easy for you to get started with GitLab, here's a list of recommended next steps.
-
-Already a pro? Just edit this README.md and make it your own. Want to make it easy? [Use the template at the bottom](#editing-this-readme)!
+Download and Install
+- [ ] Visual Studio C++, and python dev extensions
+- [ ] Visual Studio Code (Needed to visualize with jupyter)
+- [ ] pip install matplotlib
+- [ ] pip install seaborn
+- [ ] pip install tqdm
+- [ ] pip install pyswarm
+- [ ] pip install pyswarms
+- [ ] pip install keras
+- [ ] pip install POT
+- [ ] pip install cv2
+- [ ] pip install inflect
 
 ## Add your files
 
