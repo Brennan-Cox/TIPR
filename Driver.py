@@ -1,6 +1,3 @@
-from contextlib import contextmanager
-from io import StringIO
-import sys
 import matplotlib.pyplot as plt
 import seaborn as sb
 import numpy as np
@@ -11,22 +8,7 @@ from ParticleSwarm import optimal_sample_transform
 from Fonts import get_Random_Set, transform_Set, transform_image, transform_image_Reverse
 from tqdm import tqdm
 import random
-
-@contextmanager
-def suppress_stdout():
-    """
-    Method when combined with (with:)
-    will not let the code within it's section
-    output to standard out
-    """
-    # Create a StringIO object to capture the output
-    old_stdout = sys.stdout
-    sys.stdout = StringIO()
-    try:
-        yield
-    finally:
-        # Restore the original standard output
-        sys.stdout = old_stdout
+from IO import suppress_stdout
 
 def testPSO(cases, trials_per_case, display, display_Incorrect, reg):
     data = []

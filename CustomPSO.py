@@ -86,9 +86,9 @@ def custom_pso(func, lb, ub, args=(), swarmsize=100,
     topology = Star()
     
     # Shrink boundary handler will shrink the particle's velocity if it goes out of bounds
-    bh = BoundaryHandler("shrink")
+    bh = BoundaryHandler(strategy="reflective")
     # Velocity will have a linear decrease in inertia
-    vh = VelocityHandler("linear")
+    vh = VelocityHandler(strategy="unmodified")
     
     # Initialize objective function
     obj = lambda x: func(x, *args)
@@ -109,17 +109,18 @@ def custom_pso(func, lb, ub, args=(), swarmsize=100,
         # update swarm's best position and cost as dimension vector, cost
         swarm.best_pos, swarm.best_cost = topology.compute_gbest(swarm)
         
-        # Calculate the stepsize of swarm's best position
-        stepsize = np.sqrt(np.sum((best_position - swarm.best_pos)**2))
-        
-        # If the change in the swarm's best position is too small then stop
-        if best_cost != [] and np.abs(best_cost - swarm.best_cost) < minfunc:
-            print('Stopping search: Swarm best objective change less than {:}'.format(minfunc))
-            return swarm.best_pos, swarm.best_cost
-        # If the stepsize of swarm's best position is too small then stop
-        elif stepsize < minstep:
-            print('Stopping search: Swarm best position change less than {:}'.format(minstep))
-            return swarm.best_pos, swarm.best_cost
+        # Calculate the step_size of swarm's best position if iteration > 0
+        if (i > 0):
+            step_size = np.sqrt(np.sum((best_position - swarm.best_pos)**2))
+            
+            # If the change in the swarm's best position is too small then stop
+            if np.abs(best_cost - swarm.best_cost) < minfunc:
+                print('Stopping search: Swarm best objective change less than {:}'.format(minfunc))
+                return swarm.best_pos, swarm.best_cost
+            # If the stepsize of swarm's best position is too small then stop
+            elif step_size < minstep:
+                print('Stopping search: Swarm best position change less than {:}'.format(minstep))
+                return swarm.best_pos, swarm.best_cost
             
         # update swarm velocity and position based on topology
         swarm.velocity = topology.compute_velocity(swarm, velocity_Clamp, vh, bounds)

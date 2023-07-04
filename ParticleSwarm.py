@@ -2,6 +2,7 @@ import pyswarm
 from CustomPSO import custom_pso
 from OptimalTransport import POT_Parameterized
 from ImageUtility import apply_transformations, image_Points_Intensities, lb, ub
+from IO import suppress_stdout
 
 def optimal_sample_transform(comp_set, sample_image):
     """
@@ -26,15 +27,16 @@ def optimal_sample_transform(comp_set, sample_image):
     pyswarm_score = 0
     # fit to each pattern
     for i in range(len(comp_set)):
-        xopt, fopt = custom_pso(func=objective_function_custom, lb=lb, ub=ub, 
+        with suppress_stdout():
+            xopt, fopt = custom_pso(func=objective_function_custom, lb=lb, ub=ub, 
+                                    args=(image_Points_Intensities(comp_set[i]), sample_image), 
+                                    swarmsize=10, w=0.5, c1=0.5, c2=0.5,maxiter=100, 
+                                    minstep=1e-4, minfunc=1e-4, debug=False)
+            xopt2, fopt2 = pyswarm.pso(objective_function, lb, ub, 
                                 args=(image_Points_Intensities(comp_set[i]), sample_image), 
-                                swarmsize=10, w=0.5, c1=0.5, c2=0.5,maxiter=100, 
-                                minstep=1e-4, minfunc=1e-4, debug=False)
-        xopt2, fopt2 = pyswarm.pso(objective_function, lb, ub, 
-                             args=(image_Points_Intensities(comp_set[i]), sample_image), 
-                             minfunc=1e-4, minstep=1e-4, swarmsize=10, 
-                             maxiter=100, debug=False)
-        
+                                minfunc=1e-4, minstep=1e-4, swarmsize=10, 
+                                maxiter=100, debug=False)
+        print(fopt, fopt2)
         if (fopt < fopt2):
             custom_pso_score += 1
         else:
