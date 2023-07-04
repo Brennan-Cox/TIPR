@@ -4,7 +4,7 @@ import numpy as np
 from ImageUtility import display_Set, image_To_Outline, relation_Figure
 # from MNIST import random_Comparison_Set, random_Image
 from OptimalTransport import classify_Image
-from ParticleSwarm import optimal_sample_transform
+from ParticleSwarm import optimal_sample_transform, optimal_sample_transform_test
 from Fonts import get_Random_Set, transform_Set, transform_image, transform_image_Reverse
 from tqdm import tqdm
 import random
@@ -36,7 +36,7 @@ def testPSO(cases, trials_per_case, display, display_Incorrect, reg):
             
             # PSO
             # with suppress_stdout():
-            transformed_Images, classified_As = optimal_sample_transform(comparison_Set, rand_Image)
+            transformed_Images, classified_As = optimal_sample_transform_test(comparison_Set, rand_Image)
               
             correct = rand_Answer == classified_As
                         
@@ -56,4 +56,4 @@ def testPSO(cases, trials_per_case, display, display_Incorrect, reg):
     string += '\nReg {}'.format(reg)
     plt.title(string)
 
-testPSO(1, 1, display=False, display_Incorrect=False, reg=1e-4)
+testPSO(1, 1, display=True, display_Incorrect=False, reg=1e-4)

@@ -66,14 +66,14 @@ def custom_pso(func, lb, ub, args=(), swarmsize=100,
     ub = np.array(ub)
     assert np.all(ub>lb), 'All upper-bound values must be greater than lower-bound values'
     
-    vhigh = np.abs(ub - lb)
-    vlow = -vhigh
-    # The velocity clamp is the max and min velocities allowed
-    velocity_Clamp = (vlow, vhigh)
-    
-    # Initialize swarm
     # get dimensions
     dimensions = len(ub)
+    
+    vlow = -np.abs(ub - lb)
+    # The velocity clamp is the max and min velocities allowed
+    velocity_Clamp = (vlow, vlow + dimensions*(-vlow - vlow))
+    
+    # Initialize swarm
     bounds = (lb, ub)
     # set values for options
     options = {'c1': c1, 'c2': c2, 'w': w}
@@ -86,7 +86,7 @@ def custom_pso(func, lb, ub, args=(), swarmsize=100,
     topology = Star()
     
     # Shrink boundary handler will shrink the particle's velocity if it goes out of bounds
-    bh = BoundaryHandler(strategy="reflective")
+    bh = BoundaryHandler(strategy="shrink")
     # Velocity will have a linear decrease in inertia
     vh = VelocityHandler(strategy="unmodified")
     
@@ -98,7 +98,6 @@ def custom_pso(func, lb, ub, args=(), swarmsize=100,
         
         # update current cost of each particle by objective function
         swarm.current_cost = P.compute_objective_function(swarm, obj)
-        print(swarm.current_cost)
         
         # update particle best position and cost for each particle
         swarm.pbest_pos, swarm.pbest_cost = P.compute_pbest(swarm)
@@ -110,7 +109,7 @@ def custom_pso(func, lb, ub, args=(), swarmsize=100,
         swarm.best_pos, swarm.best_cost = topology.compute_gbest(swarm)
         
         # Calculate the step_size of swarm's best position if iteration > 0
-        if (i > 0):
+        if (False):
             step_size = np.sqrt(np.sum((best_position - swarm.best_pos)**2))
             
             # If the change in the swarm's best position is too small then stop
