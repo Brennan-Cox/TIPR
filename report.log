@@ -112,3 +112,18 @@ Traceback (most recent call last):
 KeyError: 'linear'
 2023-07-03 23:27:35,780 - numexpr.utils - INFO - Note: NumExpr detected 12 cores but "NUMEXPR_MAX_THREADS" not set, so enforcing safe limit of 8.
 2023-07-03 23:27:35,781 - numexpr.utils - INFO - NumExpr defaulting to 8 threads.
+2023-07-05 17:49:15,468 - pyswarms.backend.handlers - ERROR - Unrecognized strategy: shrink. Choose one among: ['adjust', 'invert', 'unmodified', 'zero']
+Traceback (most recent call last):
+  File "c:\Users\REsportsadmin\AppData\Local\Programs\Python\Python311\Lib\site-packages\pyswarms\backend\handlers.py", line 437, in __call__
+    new_position = self.strategies[self.strategy](
+                   ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+KeyError: 'shrink'
+2023-07-05 17:49:15,469 - pyswarms.backend.operators - ERROR - Missing keyword in swarm.options
+Traceback (most recent call last):
+  File "c:\Users\REsportsadmin\AppData\Local\Programs\Python\Python311\Lib\site-packages\pyswarms\backend\operators.py", line 144, in compute_velocity
+    updated_velocity = vh(
+                       ^^^
+  File "c:\Users\REsportsadmin\AppData\Local\Programs\Python\Python311\Lib\site-packages\pyswarms\backend\handlers.py", line 437, in __call__
+    new_position = self.strategies[self.strategy](
+                   ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
+KeyError: 'shrink'

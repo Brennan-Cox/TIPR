@@ -24,15 +24,11 @@ def optimal_sample_transform(comp_set, sample_image):
     best_images = []
     min_score = float('infinity')
     min_answer = 0
-    custom_pso_score = 0
-    custom_time = 0
-    pyswarm_score = 0
-    pyswarm_time = 0
     # fit to each pattern
     for i in range(len(comp_set)):
         xopt, fopt = custom_pso(func=objective_function_custom, lb=lb, ub=ub, 
                                 args=(image_Points_Intensities(comp_set[i]), sample_image), 
-                                swarmsize=10, w=0.5, c1=0.5, c2=0.5,maxiter=100, 
+                                swarmsize=10, w=0.9, c1=0.5, c2=0.5,maxiter=100, 
                                 minstep=1e-4, minfunc=1e-4, debug=False)
         if (min_score > fopt):
             min_answer = i
@@ -67,16 +63,18 @@ def optimal_sample_transform_test(comp_set, sample_image):
     for i in range(len(comp_set)):
         # with suppress_stdout():
         start = time.time()
+        print("Custom PSO***************")
         xopt, fopt = custom_pso(func=objective_function_custom, lb=lb, ub=ub, 
                                 args=(image_Points_Intensities(comp_set[i]), sample_image), 
                                 swarmsize=10, w=0.5, c1=0.5, c2=0.5,maxiter=100, 
                                 minstep=1e-4, minfunc=1e-4, debug=False)
         custom_time += time.time() - start
         start = time.time()
+        print("Pyswarm PSO***************")
         xopt2, fopt2 = pyswarm.pso(objective_function, lb, ub, 
                             args=(image_Points_Intensities(comp_set[i]), sample_image), 
                             minfunc=1e-4, minstep=1e-4, swarmsize=10, 
-                            maxiter=100, debug=False)
+                            maxiter=100, debug=True)
         pyswarm_time += time.time() - start
         if (fopt < fopt2):
             custom_pso_score += 1

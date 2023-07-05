@@ -19,8 +19,8 @@ def testPSO(cases, trials_per_case, display, display_Incorrect, reg):
         # Fonts
         original_Set, font = get_Random_Set(size=30)
         # Convolution
-        for i in range(len(original_Set)):
-            original_Set[i] = image_To_Outline(original_Set[i])
+        # for i in range(len(original_Set)):
+        #     original_Set[i] = image_To_Outline(original_Set[i])
         comparison_Set = original_Set
         
         # MNIST
@@ -35,8 +35,8 @@ def testPSO(cases, trials_per_case, display, display_Incorrect, reg):
             # rand_Image, rand_Answer = random_Image()
             
             # PSO
-            # with suppress_stdout():
-            transformed_Images, classified_As = optimal_sample_transform_test(comparison_Set, rand_Image)
+            with suppress_stdout():
+                transformed_Images, classified_As = optimal_sample_transform(comparison_Set, rand_Image)
               
             correct = rand_Answer == classified_As
                         
@@ -56,4 +56,4 @@ def testPSO(cases, trials_per_case, display, display_Incorrect, reg):
     string += '\nReg {}'.format(reg)
     plt.title(string)
 
-testPSO(1, 1, display=True, display_Incorrect=False, reg=1e-4)
+testPSO(1, 30, display=False, display_Incorrect=True, reg=1e-4)
