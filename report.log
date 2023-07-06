@@ -127,3 +127,5 @@ Traceback (most recent call last):
     new_position = self.strategies[self.strategy](
                    ~~~~~~~~~~~~~~~^^^^^^^^^^^^^^^
 KeyError: 'shrink'
+2023-07-06 19:30:27,973 - fontTools.ttLib.tables._p_o_s_t - WARNING - 58295 extra bytes in post.stringData array
+2023-07-06 19:44:59,957 - fontTools.ttLib.tables._p_o_s_t - WARNING - 58295 extra bytes in post.stringData array

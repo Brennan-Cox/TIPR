@@ -8,7 +8,7 @@ from ImageUtility import lb, ub
 
 def custom_pso(func, lb, ub, args=(), swarmsize=100, 
                 w=0.5, c1=0.5, c2=0.5, maxiter=100, 
-                minstep=1e-8, minfunc=1e-8, debug=False):
+                minstep=1e-8, minfunc=1e-8, debug=False, inertia_decay=1):
     """
     Perform a particle swarm optimization (PSO)
     Stylistically similar to pyswarm.pso, but with a few key differences:
@@ -50,7 +50,10 @@ def custom_pso(func, lb, ub, args=(), swarmsize=100,
         terminates (Default: 1e-8)
     debug : boolean
         If True, progress statements will be displayed every iteration
-        
+        (Default: False)
+    intertia_decay : scalar
+        The rate at which the inertia weight decreases by proportion scalar*100%
+        (Default: 1)
     Returns
     =======
     swarm.best_pos : array
@@ -72,7 +75,7 @@ def custom_pso(func, lb, ub, args=(), swarmsize=100,
     # get dimensions
     dimensions = len(ub)
     
-    vhigh = np.abs(ub - lb)
+    vhigh = np.abs(ub - lb) / 5
     vlow = -vhigh
     # The velocity clamp is the max and min velocities allowed
     velocity_Clamp = (vlow, vhigh)
@@ -81,6 +84,7 @@ def custom_pso(func, lb, ub, args=(), swarmsize=100,
     bounds = (lb, ub)
     # set values for options
     options = {'c1': c1, 'c2': c2, 'w': w}
+
     # define the topology
     topology = Star()
 
@@ -95,14 +99,14 @@ def custom_pso(func, lb, ub, args=(), swarmsize=100,
 
     # Shrink boundary handler will shrink the particle's velocity if it goes out of bounds
     bh = BoundaryHandler(strategy="random")
-    # Velocity will have a linear decrease in inertia
+    # Velocity handler will decrease the particle's velocity as the search progresses
     vh = VelocityHandler(strategy="unmodified")
     
     # Iterate until termination criterion met
     for i in range(maxiter):
 
         # inertia weight decreases compoundingly
-        swarm.options.update({'w': w * 0.9**i})
+        swarm.options.update({'w': w * inertia_decay**i})
 
         # Update the velocity and position of the swarm
         swarm.velocity = topology.compute_velocity(swarm, velocity_Clamp, vh, bounds)
@@ -132,9 +136,16 @@ def custom_pso(func, lb, ub, args=(), swarmsize=100,
         step_size = np.sqrt(np.sum((best_position - swarm.best_pos)**2))
         
         if debug:
+            print('******************************')
             # best after iteration print iteration number, cost, and position
             # Example: "Best after iteration 1: 0.3812 [-0.0012  0.0003]"
             print('Best after iteration {:}: {:} {:} {:}'.format(i+1, swarm.best_cost, swarm.best_pos, swarm.options))
+            # Print the pbest position and pbest cost for each particle without scientific notation
+            print('pbest_pos: ' + str(np.array2string(swarm.pbest_pos, formatter={'float_kind':lambda x: "%.4f" % x})))
+            print('pbest_cost: ' + str(np.array2string(swarm.pbest_cost, formatter={'float_kind':lambda x: "%.4f" % x})))
+            # Print the velocity matrix for each particle without scientific notation
+            print('velocity: ' + str(np.array2string(swarm.velocity, formatter={'float_kind':lambda x: "%.4f" % x})))
+            print('******************************')
             
         # if swarm's best position is better than the best position of the swarm before updating
         if swarm.best_cost < best_cost:
@@ -142,11 +153,10 @@ def custom_pso(func, lb, ub, args=(), swarmsize=100,
             if np.abs(best_cost - swarm.best_cost) < minfunc:
                 print('Stopping search: Swarm best objective change less than {:}'.format(minfunc))
                 return swarm.best_pos, swarm.best_cost
-            # If the stepsize of swarm's best position is too small then stop
-            elif step_size < minstep:
-                print('Stopping search: Swarm best position change less than {:}'.format(minstep))
-                return swarm.best_pos, swarm.best_cost
+        # If the stepsize of swarm's best position is too small then stop
+        if step_size < minstep and step_size != 0:
+            print('Stopping search: Swarm best position change less than {:}'.format(minstep))
+            return swarm.best_pos, swarm.best_cost
             
-        
     print('Stopping search: maximum iterations reached --> {:}'.format(maxiter))
     return swarm.best_pos, swarm.best_cost

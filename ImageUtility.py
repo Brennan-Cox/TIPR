@@ -13,7 +13,7 @@ def image_Points_Intensities(image):
     Args:
         image (array-like image): source image
     """
-    a = np.argwhere(image > 10)
+    a = np.argwhere(image > 50)
         
     SA = image[a[:, 0], a[:, 1]]
     SA = SA / np.sum(SA)
@@ -88,7 +88,7 @@ def image_To_Outline(img):
 
     return cv2.filter2D(src=img, ddepth=-1, kernel=outline)
 
-def relation_Figure(comparison_Set, image, answer, transformations, classified, relations):
+def relation_Figure(comparison_Set, image, answer, transformations, classified, relations, title):
     """
     displays the relation figure where an image was proceed
 
@@ -100,17 +100,23 @@ def relation_Figure(comparison_Set, image, answer, transformations, classified, 
         classified (number): what the sample image was defined to be
         relations (list of list): list of [total_time, cost, transport_Plan, a, b]
     """
-    #size of figure
-    fig, axs = plt.subplots(int((len(comparison_Set) + 2) / 2), 2)
+    # size of figure
+    rows = int((len(comparison_Set) + 2) / 2) + 1
+    fig, axs = plt.subplots(rows, 2)
     fig.subplots_adjust(top=3.0, hspace=0)
     
+    axs[rows - 1, 0].set_title(title)
+    display_Set(axs[rows - 1, 0], comparison_Set)
+    axs[rows - 1, 0].set_title(title)
+    axs[rows - 1, 1].remove()
+
     axs[0, 0].set_title("Comparison Set")
     display_Set(axs[0, 0], comparison_Set)
     
     axs[0, 1].set_title("Image to identify {}".format(answer))
     axs[0, 1].imshow(image, cmap="gray")
     
-    #automatic number to word and indexing
+    # automatic number to word and indexing
     row = 1
     column = 0
     num_to_word = inflect.engine()
