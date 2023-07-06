@@ -12,6 +12,9 @@ Program takes a set of images, applies a random affine transformation to the ima
 
 Download and Install
 - [ ] Install Fonts at: https://github.com/davidstutz/disentangling-robustness-generalization (FONTS dataset)
+      ```
+      tar -xvzf [location of tar.gz file] [inside TIPR]
+      ```
 - [ ] Visual Studio C++, and python dev extensions
 - [ ] Visual Studio Code (Needed to visualize with jupyter)
 - [ ] vscode jupyter extension
