@@ -28,13 +28,13 @@ def optimal_sample_transform(comp_set, sample_image):
     for i in range(len(comp_set)):
         xopt, fopt = custom_pso(func=objective_function_custom, lb=lb, ub=ub, 
                                 args=(image_Points_Intensities(comp_set[i]), sample_image), 
-                                swarmsize=10, w=0.9, c1=0.5, c2=0.5,maxiter=100, 
-                                minstep=1e-4, minfunc=1e-4, debug=False)
+                                swarmsize=30, w=0.9, c1=0.5, c2=0.5,maxiter=100, 
+                                minstep=1e-4, minfunc=1e-5, debug=False, inertia_decay=0.95)
         if (min_score > fopt):
             min_answer = i
             min_score = fopt
         best_images.append(apply_transformations(xopt, sample_image))
-    return best_images, min_answer
+    return best_images, min_answer, xopt
 
 def optimal_sample_transform_test(comp_set, sample_image):
     """
@@ -66,15 +66,16 @@ def optimal_sample_transform_test(comp_set, sample_image):
         print("Custom PSO***************")
         xopt, fopt = custom_pso(func=objective_function_custom, lb=lb, ub=ub, 
                                 args=(image_Points_Intensities(comp_set[i]), sample_image), 
-                                swarmsize=10, w=0.5, c1=0.5, c2=0.5,maxiter=100, 
-                                minstep=1e-4, minfunc=1e-4, debug=False)
+                                swarmsize=30, w=0.9, c1=0.5, c2=0.5,maxiter=100, 
+                                minstep=1e-4, minfunc=1e-5, debug=True, inertia_decay=0.95)
         custom_time += time.time() - start
         start = time.time()
         print("Pyswarm PSO***************")
-        xopt2, fopt2 = pyswarm.pso(objective_function, lb, ub, 
-                            args=(image_Points_Intensities(comp_set[i]), sample_image), 
-                            minfunc=1e-4, minstep=1e-4, swarmsize=10, 
-                            maxiter=100, debug=True)
+        with suppress_stdout():
+            xopt2, fopt2 = pyswarm.pso(objective_function, lb, ub, 
+                                args=(image_Points_Intensities(comp_set[i]), sample_image), 
+                                minfunc=1e-5, minstep=1e-4, swarmsize=10, 
+                                maxiter=100, debug=True)
         pyswarm_time += time.time() - start
         if (fopt < fopt2):
             custom_pso_score += 1
