@@ -24,7 +24,7 @@ def testPSO(cases, trials_per_case, display, display_Incorrect, reg):
         # comparison_Set = random_Comparison_Set()
         for j in range(testCases):
 
-            original_Set, font = get_Random_Set(size=100)
+            original_Set, font = get_Random_Set(size=30)
             # Convolution
             for i in range(len(original_Set)):
                 original_Set[i] = image_To_Outline(original_Set[i])
@@ -38,9 +38,9 @@ def testPSO(cases, trials_per_case, display, display_Incorrect, reg):
             # rand_Image, rand_Answer = random_Image()
             
             # PSO
-            with suppress_stdout():
-                print('***************BEGIN TEST CASE NUMBER {}***************'.format(j))
-                transformed_Images, classified_As, xopt = optimal_sample_transform(comparison_Set, rand_Image)
+            # with suppress_stdout():
+            print('***************BEGIN TEST CASE NUMBER {}***************'.format(j))
+            transformed_Images, classified_As, xopt = optimal_sample_transform(comparison_Set, rand_Image)
               
             correct = rand_Answer == classified_As
                         
@@ -64,4 +64,4 @@ def testPSO(cases, trials_per_case, display, display_Incorrect, reg):
     string += '\nReg {}'.format(reg)
     plt.title(string)
 
-testPSO(14, 30, display=False, display_Incorrect=True, reg=1e-4)
+testPSO(30, 30, display=False, display_Incorrect=True, reg=1e-4)

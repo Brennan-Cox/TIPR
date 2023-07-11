@@ -13,7 +13,7 @@ def image_Points_Intensities(image):
     Args:
         image (array-like image): source image
     """
-    a = np.argwhere(image > 50)
+    a = np.argwhere(image > 30)
         
     SA = image[a[:, 0], a[:, 1]]
     SA = SA / np.sum(SA)
