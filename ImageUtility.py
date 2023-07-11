@@ -13,7 +13,7 @@ def image_Points_Intensities(image):
     Args:
         image (array-like image): source image
     """
-    a = np.argwhere(image > 30)
+    a = np.argwhere(image > 50)
         
     SA = image[a[:, 0], a[:, 1]]
     SA = SA / np.sum(SA)
@@ -85,8 +85,8 @@ def image_To_Outline(img):
     outline = np.array([[0, -1 , 0],
                         [-1, 4, -1],
                         [0, -1, 0]])
-
-    return cv2.filter2D(src=img, ddepth=-1, kernel=outline)
+    img = cv2.filter2D(src=img, ddepth=-1, kernel=outline)
+    return brightenImage(img)
 
 def relation_Figure(comparison_Set, image, answer, transformations, classified, relations, title):
     """
@@ -175,20 +175,29 @@ def apply_transformations(x, image):
     X_shear = x[5]
     Y_shear = x[6]
     
+    brightenImage(image)
     # add rotation axis before scale and shear
     rotation_matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
     image = cv2.warpAffine(image, rotation_matrix, (width, height))
+    brightenImage(image)
     
     translation_matrix = np.float32([[1, 0, X_translation], 
                                      [0, 1, Y_translation]])
     image = cv2.warpAffine(image, translation_matrix, (width, height))
+    brightenImage(image)
     
     scale_matrix = np.float32([[X_scale, 0, 0], 
                                [0, Y_scale, 0]])
     image = cv2.warpAffine(image, scale_matrix, (width, height))
+    brightenImage(image)
     
     shear_matrix = np.float32([[1, X_shear, 0],
                                [Y_shear, 1, 0]])
     image = cv2.warpAffine(image, shear_matrix, (width, height))
+    brightenImage(image)
     
+    return image
+
+def brightenImage(image):
+    image = image * (255 / np.max(image))
     return image

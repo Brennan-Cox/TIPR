@@ -68,4 +68,4 @@ def testPSO(cases, trials_per_case, display, display_Incorrect, reg):
     string += '\nReg {}'.format(reg)
     plt.title(string)
 
-testPSO(10, 30, display=False, display_Incorrect=True, reg=1e-4)
+testPSO(30, 30, display=True, display_Incorrect=True, reg=1e-4)

@@ -1,6 +1,6 @@
 from PIL import ImageFont, Image, ImageDraw
 import random, os, numpy as np
-from ImageUtility import apply_transformations, lb, ub
+from ImageUtility import apply_transformations, display_Set, lb, ub
 import matplotlib.pyplot as plt
 from fontTools.ttLib import TTFont
 
@@ -35,6 +35,7 @@ def read_font(fn, characters, size=28):
     font = ImageFont.truetype(fn, int(points))
     
     data = []
+    size = size * 2
     for char in characters:
         # new grayscale image all white
         img = Image.new('L', (size, size), 255)
@@ -194,3 +195,7 @@ def generate_random_set(lower_bound, upper_bound):
         random_element = lower + random.random() * range
         random_set.append(random_element)
     return random_set
+
+imgs, font = get_Random_Set()
+print(imgs[0].shape)
+display_Set(plt, imgs)
