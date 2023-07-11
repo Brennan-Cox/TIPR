@@ -1,11 +1,11 @@
 import matplotlib.pyplot as plt
 import seaborn as sb
 import numpy as np
-from ImageUtility import display_Set, image_To_Outline, relation_Figure
+from ImageUtility import image_To_Outline, relation_Figure
 # from MNIST import random_Comparison_Set, random_Image
 from OptimalTransport import classify_Image
 from ParticleSwarm import optimal_sample_transform, optimal_sample_transform_test
-from Fonts import get_Random_Set, read_font, transform_Set, transform_image, transform_image_Reverse
+from Fonts import get_Random_Set, transform_image
 from tqdm import tqdm
 import random
 from IO import suppress_stdout
@@ -32,16 +32,20 @@ def testPSO(cases, trials_per_case, display, display_Incorrect, reg):
             
             #Fonts
             rand_Answer = random.randint(0, len(original_Set) - 1)
-            rand_Image = transform_image_Reverse(comparison_Set[rand_Answer])
+            rand_Image = transform_image(comparison_Set[rand_Answer])
             
             # MNIST
             # rand_Image, rand_Answer = random_Image()
             
             # PSO
-            # with suppress_stdout():
-            print('***************BEGIN TEST CASE NUMBER {}***************'.format(j))
-            transformed_Images, classified_As, xopt = optimal_sample_transform(comparison_Set, rand_Image)
-              
+            try:
+                with suppress_stdout():
+                    print('***************BEGIN TEST CASE NUMBER {}***************'.format(j))
+                    transformed_Images, classified_As, xopt = optimal_sample_transform(comparison_Set, rand_Image)
+            except:
+                print('***************Test case failed with font {}***************'.format(font))
+                continue
+
             correct = rand_Answer == classified_As
                         
             if (correct):
@@ -64,4 +68,4 @@ def testPSO(cases, trials_per_case, display, display_Incorrect, reg):
     string += '\nReg {}'.format(reg)
     plt.title(string)
 
-testPSO(30, 30, display=False, display_Incorrect=True, reg=1e-4)
+testPSO(10, 30, display=False, display_Incorrect=True, reg=1e-4)

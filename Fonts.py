@@ -1,7 +1,6 @@
 from PIL import ImageFont, Image, ImageDraw
-from ImageUtility import apply_transformations_Reverse, display_Set, lb, ub
 import random, os, numpy as np
-from ImageUtility import apply_transformations
+from ImageUtility import apply_transformations, lb, ub
 import matplotlib.pyplot as plt
 from fontTools.ttLib import TTFont
 
@@ -154,7 +153,6 @@ def get_Random_Set(characters = '0123456789', size = 28):
 
 def transform_image(image):
     """
-    applies random transformation to an image
 
     Args:
         image (image): image to be transformed
@@ -163,18 +161,6 @@ def transform_image(image):
         image: randomly transformed
     """
     return apply_transformations(generate_random_set(lb, ub), image)
-
-def transform_image_Reverse(image):
-    """
-    applies random transformation to an image
-
-    Args:
-        image (image): image to be transformed
-
-    Returns:
-        image: randomly transformed
-    """
-    return apply_transformations_Reverse(generate_random_set(lb, ub), image)
 
 def transform_Set(images):
     """
