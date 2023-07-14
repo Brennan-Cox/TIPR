@@ -10,7 +10,7 @@ from tqdm import tqdm
 import random
 from IO import suppress_stdout
 
-def testPSO(cases, trials_per_case, display, display_Incorrect, reg):
+def testPSO(cases, trials_per_case, display, display_Incorrect):
     data = []
     progressBar = tqdm(total=cases * trials_per_case, desc='testPSO')
     for i in range(cases):
@@ -38,13 +38,14 @@ def testPSO(cases, trials_per_case, display, display_Incorrect, reg):
             # rand_Image, rand_Answer = random_Image()
             
             # PSO
-            try:
-                with suppress_stdout():
-                    print('***************BEGIN TEST CASE NUMBER {}***************'.format(j))
-                    transformed_Images, classified_As, xopt = optimal_sample_transform(comparison_Set, rand_Image)
-            except:
-                print('***************Test case failed with font {}***************'.format(font))
-                continue
+            # try:
+            with suppress_stdout():
+                print('***************BEGIN TEST CASE NUMBER {}***************'.format(j))
+                transformed_Images, classified_As, xopt = optimal_sample_transform(comparison_Set, rand_Image)
+            # except Exception as e:
+            #     print(e)
+            #     print('***************Test case failed with font {}***************'.format(font))
+            #     continue
 
             correct = rand_Answer == classified_As
                         
@@ -52,7 +53,7 @@ def testPSO(cases, trials_per_case, display, display_Incorrect, reg):
                 totalCorrect = totalCorrect + 1
             
             if (display or (not correct and display_Incorrect)):
-                classified_As, relations = classify_Image(comparison_Set, transformed_Images, reg)
+                classified_As, relations = classify_Image(comparison_Set, transformed_Images)
                 # title is font and xopt
                 # np.array to string
                 xoptStr = np.array2string(xopt, precision=2, separator=',', suppress_small=True)    
@@ -65,7 +66,6 @@ def testPSO(cases, trials_per_case, display, display_Incorrect, reg):
     
     accuracy = np.sum(data) / cases
     string = "Accuracy is {}".format(accuracy)
-    string += '\nReg {}'.format(reg)
     plt.title(string)
 
-testPSO(30, 30, display=True, display_Incorrect=True, reg=1e-4)
+testPSO(30, 30, display=False, display_Incorrect=True)

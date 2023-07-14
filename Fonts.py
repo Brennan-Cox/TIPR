@@ -1,6 +1,6 @@
 from PIL import ImageFont, Image, ImageDraw
 import random, os, numpy as np
-from ImageUtility import apply_transformations, display_Set, lb, ub
+from ImageUtility import apply_transformations, display_Set, image_Points_Intensities, lb, ub
 import matplotlib.pyplot as plt
 from fontTools.ttLib import TTFont
 
@@ -31,11 +31,10 @@ def read_font(fn, characters, size=28):
     :rtype: numpy.ndarray
     """
     
-    points = size - size/4
+    points = size * 0.75
     font = ImageFont.truetype(fn, int(points))
     
     data = []
-    size = size * 2
     for char in characters:
         # new grayscale image all white
         img = Image.new('L', (size, size), 255)
@@ -196,6 +195,8 @@ def generate_random_set(lower_bound, upper_bound):
         random_set.append(random_element)
     return random_set
 
-imgs, font = get_Random_Set()
-print(imgs[0].shape)
-display_Set(plt, imgs)
+# imgs = read_font('fonts/fonts-master/apache/aclonica/Aclonica-Regular.ttf', '0123456789', 45)
+# print(imgs[0].shape)
+# a, SA = image_Points_Intensities(imgs[0])
+# print(a.shape)
+# display_Set(plt, imgs)

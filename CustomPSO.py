@@ -1,9 +1,7 @@
 import numpy as np
 import pyswarms.backend as P
 from pyswarms.backend.topology import Star, Ring, VonNeumann, Random, Pyramid
-from pyswarms.backend.swarms import Swarm
 from pyswarms.backend.handlers import BoundaryHandler, VelocityHandler
-from pyswarms.backend.generators import generate_swarm, generate_velocity
 from ImageUtility import lb, ub
 
 def custom_pso(func, lb, ub, args=(), swarmsize=100, 
@@ -35,10 +33,10 @@ def custom_pso(func, lb, ub, args=(), swarmsize=100,
     w : inertia weight
         Particle velocity scaling factor (Default: 0.5)
     c1 : cognitive parameter
-        Scaling factor to search away from the particle's best known position
+        Scaling factor to search towrds the particle's best known position
         (Default: 0.5)
     c2 : social parameter
-        Scaling factor to search away from the swarm's best known position
+        Scaling factor to search towards the swarm's best known position
         (Default: 0.5)
     maxiter : int
         The maximum number of iterations for the swarm to search (Default: 100)

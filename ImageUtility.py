@@ -147,9 +147,9 @@ def relation_Figure(comparison_Set, image, answer, transformations, classified, 
         fig.set_facecolor("red")
         
 #### VECTORS OF TRANSFORMATION ####
-scaleLimit = 0.10
+scaleLimit = 0.20
 rotationLimit = np.degrees(np.pi / 3)
-translateLimit = 0.10
+translateLimit = 0.15
 shearLimit = 0.20
 lb = [-rotationLimit, -translateLimit, -translateLimit, -scaleLimit, -scaleLimit, -shearLimit, -shearLimit]
 ub = [rotationLimit, translateLimit, translateLimit, scaleLimit, scaleLimit, shearLimit, shearLimit]
@@ -199,5 +199,8 @@ def apply_transformations(x, image):
     return image
 
 def brightenImage(image):
-    image = image * (255 / np.max(image))
+    max = np.max(image)
+    if max == 0:
+        return image
+    image = image * (255 / max)
     return image

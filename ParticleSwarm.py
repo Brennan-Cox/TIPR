@@ -136,10 +136,8 @@ def objective_function(x, comp_extract, image):
     cost (number): the minimum cost between the transformed image
         and the set of images
     """
-    # POT reg param
-    reg = 1e-4
     image = apply_transformations(x, image)
     b, DB = image_Points_Intensities(image)
     a, SA = comp_extract
-    a, b, cost, total_time, transport_Plan = POT_Parameterized(a, b, SA, DB, reg)
+    a, b, cost, total_time, transport_Plan = POT_Parameterized(a, b, SA, DB)
     return cost
