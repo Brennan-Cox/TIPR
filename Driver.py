@@ -1,16 +1,16 @@
 import matplotlib.pyplot as plt
 import seaborn as sb
 import numpy as np
-from ImageUtility import display_Set, image_To_Outline, relation_Figure
+from ImageUtility import image_To_Outline, relation_Figure
 # from MNIST import random_Comparison_Set, random_Image
 from OptimalTransport import classify_Image
 from ParticleSwarm import optimal_sample_transform, optimal_sample_transform_test
-from Fonts import get_Random_Set, read_font, transform_Set, transform_image, transform_image_Reverse
+from Fonts import get_Random_Set, transform_image
 from tqdm import tqdm
 import random
 from IO import suppress_stdout
 
-def testPSO(cases, trials_per_case, display, display_Incorrect, reg):
+def testPSO(cases, trials_per_case, display, display_Incorrect):
     data = []
     progressBar = tqdm(total=cases * trials_per_case, desc='testPSO')
     for i in range(cases):
@@ -24,31 +24,36 @@ def testPSO(cases, trials_per_case, display, display_Incorrect, reg):
         # comparison_Set = random_Comparison_Set()
         for j in range(testCases):
 
-            original_Set, font = get_Random_Set(size=100)
+            original_Set, font = get_Random_Set(size=30)
             # Convolution
-            for i in range(len(original_Set)):
-                original_Set[i] = image_To_Outline(original_Set[i])
+            # for i in range(len(original_Set)):
+            #     original_Set[i] = image_To_Outline(original_Set[i])
             comparison_Set = original_Set
             
             #Fonts
             rand_Answer = random.randint(0, len(original_Set) - 1)
-            rand_Image = transform_image_Reverse(comparison_Set[rand_Answer])
+            rand_Image = transform_image(comparison_Set[rand_Answer])
             
             # MNIST
             # rand_Image, rand_Answer = random_Image()
             
             # PSO
+            # try:
             with suppress_stdout():
                 print('***************BEGIN TEST CASE NUMBER {}***************'.format(j))
                 transformed_Images, classified_As, xopt = optimal_sample_transform(comparison_Set, rand_Image)
-              
+            # except Exception as e:
+            #     print(e)
+            #     print('***************Test case failed with font {}***************'.format(font))
+            #     continue
+
             correct = rand_Answer == classified_As
                         
             if (correct):
                 totalCorrect = totalCorrect + 1
             
             if (display or (not correct and display_Incorrect)):
-                classified_As, relations = classify_Image(comparison_Set, transformed_Images, reg)
+                classified_As, relations = classify_Image(comparison_Set, transformed_Images)
                 # title is font and xopt
                 # np.array to string
                 xoptStr = np.array2string(xopt, precision=2, separator=',', suppress_small=True)    
@@ -61,7 +66,6 @@ def testPSO(cases, trials_per_case, display, display_Incorrect, reg):
     
     accuracy = np.sum(data) / cases
     string = "Accuracy is {}".format(accuracy)
-    string += '\nReg {}'.format(reg)
     plt.title(string)
 
-testPSO(14, 30, display=False, display_Incorrect=True, reg=1e-4)
+testPSO(30, 30, display=False, display_Incorrect=True)

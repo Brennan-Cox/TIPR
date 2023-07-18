@@ -85,8 +85,8 @@ def image_To_Outline(img):
     outline = np.array([[0, -1 , 0],
                         [-1, 4, -1],
                         [0, -1, 0]])
-
-    return cv2.filter2D(src=img, ddepth=-1, kernel=outline)
+    img = cv2.filter2D(src=img, ddepth=-1, kernel=outline)
+    return brightenImage(img)
 
 def relation_Figure(comparison_Set, image, answer, transformations, classified, relations, title):
     """
@@ -147,51 +147,13 @@ def relation_Figure(comparison_Set, image, answer, transformations, classified, 
         fig.set_facecolor("red")
         
 #### VECTORS OF TRANSFORMATION ####
-scaleLimit = 0.10
-rotationLimit = np.degrees(np.pi / 6)
-translateLimit = 0.10
+scaleLimit = 0.20
+rotationLimit = np.degrees(np.pi / 3)
+translateLimit = 0.15
 shearLimit = 0.20
 lb = [-rotationLimit, -translateLimit, -translateLimit, -scaleLimit, -scaleLimit, -shearLimit, -shearLimit]
 ub = [rotationLimit, translateLimit, translateLimit, scaleLimit, scaleLimit, shearLimit, shearLimit]
 
-def apply_transformations_Reverse(x, image):
-    """
-    Applies transformations based on the dimensions of x in reverse of namesake
-
-    Args:
-        x (list / vector): position of a particle in the swarm
-        image (image): original image to be transformed
-
-    Returns:
-        image (image): transformed image
-    """
-    height, width = image.shape[:2]
-    center = (width / 2, height / 2)
-    angle = x[0]
-    X_translation = x[1] * width
-    Y_translation = x[2] * height
-    X_scale = 1 + x[3]
-    Y_scale = 1 + x[4]
-    X_shear = x[5]
-    Y_shear = x[6]
-    
-    shear_matrix = np.float32([[1, X_shear, 0],
-                               [Y_shear, 1, 0]])
-    image = cv2.warpAffine(image, shear_matrix, (width, height))
-    
-    scale_matrix = np.float32([[X_scale, 0, 0], 
-                               [0, Y_scale, 0]])
-    image = cv2.warpAffine(image, scale_matrix, (width, height))
-    
-    translation_matrix = np.float32([[1, 0, X_translation], 
-                                     [0, 1, Y_translation]])
-    image = cv2.warpAffine(image, translation_matrix, (width, height))
-    
-    rotation_matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
-    image = cv2.warpAffine(image, rotation_matrix, (width, height))
-    
-    return image
-        
 def apply_transformations(x, image):
     """
     Applies transformations based on the dimensions of x
@@ -213,24 +175,32 @@ def apply_transformations(x, image):
     X_shear = x[5]
     Y_shear = x[6]
     
+    brightenImage(image)
     # add rotation axis before scale and shear
     rotation_matrix = cv2.getRotationMatrix2D(center, angle, 1.0)
     image = cv2.warpAffine(image, rotation_matrix, (width, height))
+    brightenImage(image)
     
     translation_matrix = np.float32([[1, 0, X_translation], 
                                      [0, 1, Y_translation]])
     image = cv2.warpAffine(image, translation_matrix, (width, height))
+    brightenImage(image)
     
     scale_matrix = np.float32([[X_scale, 0, 0], 
                                [0, Y_scale, 0]])
     image = cv2.warpAffine(image, scale_matrix, (width, height))
+    brightenImage(image)
     
     shear_matrix = np.float32([[1, X_shear, 0],
                                [Y_shear, 1, 0]])
     image = cv2.warpAffine(image, shear_matrix, (width, height))
+    brightenImage(image)
     
     return image
-        
-# set = get_Random_Set('0123456789')
-# display_Set(plt, set)
-# display_Set(plt, transform_Set(set))
+
+def brightenImage(image):
+    max = np.max(image)
+    if max == 0:
+        return image
+    image = image * (255 / max)
+    return image

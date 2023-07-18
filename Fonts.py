@@ -1,7 +1,6 @@
 from PIL import ImageFont, Image, ImageDraw
-from ImageUtility import apply_transformations_Reverse, display_Set, lb, ub
 import random, os, numpy as np
-from ImageUtility import apply_transformations
+from ImageUtility import apply_transformations, display_Set, image_Points_Intensities, lb, ub
 import matplotlib.pyplot as plt
 from fontTools.ttLib import TTFont
 
@@ -32,7 +31,7 @@ def read_font(fn, characters, size=28):
     :rtype: numpy.ndarray
     """
     
-    points = size - size/4
+    points = size * 0.75
     font = ImageFont.truetype(fn, int(points))
     
     data = []
@@ -154,7 +153,6 @@ def get_Random_Set(characters = '0123456789', size = 28):
 
 def transform_image(image):
     """
-    applies random transformation to an image
 
     Args:
         image (image): image to be transformed
@@ -163,18 +161,6 @@ def transform_image(image):
         image: randomly transformed
     """
     return apply_transformations(generate_random_set(lb, ub), image)
-
-def transform_image_Reverse(image):
-    """
-    applies random transformation to an image
-
-    Args:
-        image (image): image to be transformed
-
-    Returns:
-        image: randomly transformed
-    """
-    return apply_transformations_Reverse(generate_random_set(lb, ub), image)
 
 def transform_Set(images):
     """
@@ -208,3 +194,9 @@ def generate_random_set(lower_bound, upper_bound):
         random_element = lower + random.random() * range
         random_set.append(random_element)
     return random_set
+
+# imgs = read_font('fonts/fonts-master/apache/aclonica/Aclonica-Regular.ttf', '0123456789', 45)
+# print(imgs[0].shape)
+# a, SA = image_Points_Intensities(imgs[0])
+# print(a.shape)
+# display_Set(plt, imgs)

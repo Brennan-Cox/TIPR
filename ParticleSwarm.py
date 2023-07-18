@@ -1,6 +1,6 @@
 import pyswarm
 from CustomPSO import custom_pso
-from OptimalTransport import POT_Parameterized
+from OptimalTransport import POT_Parameterized, L1
 from ImageUtility import apply_transformations, image_Points_Intensities, lb, ub
 from IO import suppress_stdout
 import time
@@ -26,10 +26,14 @@ def optimal_sample_transform(comp_set, sample_image):
     min_answer = 0
     # fit to each pattern
     for i in range(len(comp_set)):
+        # xopt, fopt = custom_pso(func=objective_function_custom_L1, lb=lb, ub=ub,
+        #                         args=(comp_set[i], sample_image),
+        #                         swarmsize=30, w=1.0, c1=0.5, c2=0.5,maxiter=100,
+        #                         minstep=1e-4, minfunc=1e-5, debug=False, inertia_decay=0.95)
         xopt, fopt = custom_pso(func=objective_function_custom, lb=lb, ub=ub, 
                                 args=(image_Points_Intensities(comp_set[i]), sample_image), 
-                                swarmsize=30, w=0.9, c1=0.5, c2=0.5,maxiter=100, 
-                                minstep=1e-4, minfunc=1e-6, debug=False, inertia_decay=0.95)
+                                swarmsize=30, w=1.0, c1=0.5, c2=0.5,maxiter=100, 
+                                minstep=1e-4, minfunc=1e-5, debug=False, inertia_decay=0.95)
         if (min_score > fopt):
             min_answer = i
             min_score = fopt
@@ -94,6 +98,16 @@ def optimal_sample_transform_test(comp_set, sample_image):
     print('pyswarm PSO took {} seconds'.format(pyswarm_time))
     return best_images, min_answer
 
+def objective_function_custom_L1(set_x, comp_extract, image):
+    cost_matrix = []
+    for x in set_x:
+        cost_matrix.append(objective_function_L1(x, comp_extract, image))
+    return cost_matrix
+
+def objective_function_L1(x, comp, image):
+    image = apply_transformations(x, image)
+    return L1(image, comp)
+
 def objective_function_custom(set_x, comp_extract, image):
     """
     This function takes a set of x as a particle swarm vector
@@ -136,10 +150,8 @@ def objective_function(x, comp_extract, image):
     cost (number): the minimum cost between the transformed image
         and the set of images
     """
-    # POT reg param
-    reg = 1e-4
     image = apply_transformations(x, image)
     b, DB = image_Points_Intensities(image)
     a, SA = comp_extract
-    a, b, cost, total_time, transport_Plan = POT_Parameterized(a, b, SA, DB, reg)
+    a, b, cost, total_time, transport_Plan = POT_Parameterized(a, b, SA, DB)
     return cost
