@@ -3,6 +3,23 @@ import ot, time
 import ot.backend as otb
 from ImageUtility import image_Points_Intensities
 
+def L1(a, b):
+    """
+    Calculates the L1 distance between two images
+    the first image is put on top of another image
+    then the images are subtracted from each other
+    after subtracting the images then the L1 distance is the
+    sum of all of the matrix values left
+
+    Args:
+        a (np array): set of points describing comp image
+        b (np array): set of points describing sample image
+
+    Returns:
+        L1 distance between two images
+    """
+    return np.sum(np.abs(a-b))
+
 def POT(comp_Image, Image):
     """
     Given a comparison image, and sample image, this method will return the EMD OT distance
@@ -44,8 +61,8 @@ def POT_Parameterized(a, b, SA, DB):
     start_time = time.time()
     cost_Matrix = ot.dist(x1=a, x2=b, metric='sqeuclidean')
     cost_Matrix = cost_Matrix / np.max(a=cost_Matrix)
-    transport_Plan = ot.emd(SA, DB, cost_Matrix)
-    # transport_Plan = ot.sinkhorn(a=SA, b=DB, M=cost_Matrix, reg=1e-3)
+    transport_Plan= ot.emd(SA, DB, cost_Matrix)
+    # transport_Plan = ot.sinkhorn(a=SA, b=DB, M=cost_Matrix, reg=0.1)
     cost = np.sum(cost_Matrix * transport_Plan)
     
     end_time = time.time()

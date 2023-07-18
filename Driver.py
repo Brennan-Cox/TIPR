@@ -26,8 +26,8 @@ def testPSO(cases, trials_per_case, display, display_Incorrect):
 
             original_Set, font = get_Random_Set(size=30)
             # Convolution
-            for i in range(len(original_Set)):
-                original_Set[i] = image_To_Outline(original_Set[i])
+            # for i in range(len(original_Set)):
+            #     original_Set[i] = image_To_Outline(original_Set[i])
             comparison_Set = original_Set
             
             #Fonts
