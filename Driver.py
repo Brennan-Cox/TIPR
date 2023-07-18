@@ -26,8 +26,8 @@ def testPSO(cases, trials_per_case, display, display_Incorrect):
 
             original_Set, font = get_Random_Set(size=30)
             # Convolution
-            # for i in range(len(original_Set)):
-            #     original_Set[i] = image_To_Outline(original_Set[i])
+            for i in range(len(original_Set)):
+                original_Set[i] = image_To_Outline(original_Set[i])
             comparison_Set = original_Set
             
             #Fonts
@@ -38,14 +38,14 @@ def testPSO(cases, trials_per_case, display, display_Incorrect):
             # rand_Image, rand_Answer = random_Image()
             
             # PSO
-            # try:
-            with suppress_stdout():
-                print('***************BEGIN TEST CASE NUMBER {}***************'.format(j))
-                transformed_Images, classified_As, xopt = optimal_sample_transform(comparison_Set, rand_Image)
-            # except Exception as e:
-            #     print(e)
-            #     print('***************Test case failed with font {}***************'.format(font))
-            #     continue
+            try:
+                with suppress_stdout():
+                    print('***************BEGIN TEST CASE NUMBER {}***************'.format(j))
+                    transformed_Images, classified_As, xopt = optimal_sample_transform(comparison_Set, rand_Image)
+            except Exception as e:
+                print(e)
+                print('***************Test case failed with font {}***************'.format(font))
+                continue
 
             correct = rand_Answer == classified_As
                         
@@ -68,4 +68,4 @@ def testPSO(cases, trials_per_case, display, display_Incorrect):
     string = "Accuracy is {}".format(accuracy)
     plt.title(string)
 
-testPSO(30, 30, display=False, display_Incorrect=True)
+testPSO(1, 30, display=False, display_Incorrect=True)
