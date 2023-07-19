@@ -125,6 +125,15 @@ def custom_pso(func, lb, ub, args=(), swarmsize=100,
         swarm.velocity = topology.compute_velocity(swarm, velocity_Clamp, vh, bounds)
         # Add some ratio matrix multiplied by velocity matrix
         swarm.position = topology.compute_position(swarm, bounds, bh)
+        # if particles are too close to each other, move them apart
+        for i in range(swarmsize):
+            for j in range(swarmsize):
+                if i == j: continue
+                # take the distance between two particles
+                # if that distance is less than the minimum step, move the particle
+                # to a random position within the bounds
+                if np.sqrt(np.sum((swarm.position[i] - swarm.position[j])**2)) <= minstep:
+                    swarm.position[i] = np.random.uniform(lb, ub, dimensions)
 
         # Warning that the particles are not within the bounds and need to be clipped
         if not np.all(swarm.position <= ub): Warning('A particle moved out of bounds (upper): ' + str(swarm.position))

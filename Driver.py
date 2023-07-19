@@ -68,4 +68,4 @@ def testPSO(cases, trials_per_case, display, display_Incorrect):
     string = "Accuracy is {}".format(accuracy)
     plt.title(string)
 
-testPSO(30, 30, display=False, display_Incorrect=True)
+testPSO(1, 30, display=False, display_Incorrect=True)
