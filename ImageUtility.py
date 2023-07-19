@@ -149,7 +149,7 @@ def relation_Figure(comparison_Set, image, answer, transformations, classified, 
 #### VECTORS OF TRANSFORMATION ####
 scaleLimit = 0.20
 rotationLimit = np.degrees(np.pi / 3)
-translateLimit = 0.15
+translateLimit = 0.10
 shearLimit = 0.20
 lb = [-rotationLimit, -translateLimit, -translateLimit, -scaleLimit, -scaleLimit, -shearLimit, -shearLimit]
 ub = [rotationLimit, translateLimit, translateLimit, scaleLimit, scaleLimit, shearLimit, shearLimit]
