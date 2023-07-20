@@ -1,0 +1,1 @@
+./fonts-master\apache\jsmathcmex10\jsMath-cmex10.ttf
