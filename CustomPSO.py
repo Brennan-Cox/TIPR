@@ -116,6 +116,7 @@ def custom_pso(func, lb, ub, args=(), swarmsize=100,
     vh = VelocityHandler(strategy="unmodified")
     
     # Iterate until termination criterion met
+    collisions = 0
     for i in range(maxiter):
 
         # inertia weight decreases compoundingly
@@ -126,15 +127,18 @@ def custom_pso(func, lb, ub, args=(), swarmsize=100,
         # Add some ratio matrix multiplied by velocity matrix
         swarm.position = topology.compute_position(swarm, bounds, bh)
         # if particles are too close to each other, move them apart
-        for i in range(swarmsize):
+        for k in range(swarmsize):
             for j in range(swarmsize):
-                if i == j: continue
+                if k == j: continue
                 # take the distance between two particles
                 # if that distance is less than the minimum step, move the particle
                 # to a random position within the bounds
-                if np.sqrt(np.sum((swarm.position[i] - swarm.position[j])**2)) <= minstep:
-                    swarm.position[i] = np.random.uniform(lb, ub, dimensions)
-                    swarm.velocity[i] = np.random.uniform(vlow, vhigh, dimensions)
+                if np.sqrt(np.sum((swarm.position[k] - swarm.position[j])**2)) < minstep:
+                    collisions += 1
+                    # move the particle just outside the bounds
+                    swarm.position[k] = swarm.position[k] + np.random.uniform(-1, 1, dimensions) * minstep
+                    # swarm.position[k] = np.random.uniform(lb, ub, dimensions)
+                    swarm.velocity[k] = np.random.uniform(vlow, vhigh, dimensions)
 
         # Warning that the particles are not within the bounds and need to be clipped
         if not np.all(swarm.position <= ub): Warning('A particle moved out of bounds (upper): ' + str(swarm.position))
@@ -175,12 +179,12 @@ def custom_pso(func, lb, ub, args=(), swarmsize=100,
         if swarm.best_cost < best_cost:
             # print itteration number
             if np.abs(best_cost - swarm.best_cost) < minfunc:
-                print('Stopping search: Swarm best objective change less than {:} itterations {:}'.format(minfunc, i))
-                return swarm.best_pos, swarm.best_cost
+                print('Stopping search: Swarm best objective change less than {:} iterations {:} collisions {:}'.format(minfunc, i + 1, collisions))
+                return swarm.best_pos, swarm.best_cost, collisions, i
         # If the stepsize of swarm's best position is too small then stop
         if step_size < minstep and step_size != 0:
-            print('Stopping search: Swarm best position change less than {:} itterations {:}'.format(minstep, i))
-            return swarm.best_pos, swarm.best_cost
+            print('Stopping search: Swarm best position change less than {:} iterations {:} collisions {:}'.format(minstep, i + 1, collisions))
+            return swarm.best_pos, swarm.best_cost, collisions, i
             
-    print('Stopping search: maximum iterations reached --> {:}'.format(maxiter))
-    return swarm.best_pos, swarm.best_cost
+    print('Stopping search: maximum iterations reached --> {:} collisions {:}'.format(maxiter, collisions))
+    return swarm.best_pos, swarm.best_cost, collisions, i

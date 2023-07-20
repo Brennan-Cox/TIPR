@@ -217,7 +217,7 @@ def apply_transformations(x, image):
                                [Y_shear, 1, 0]])
     image = cv2.warpAffine(image, shear_matrix, (width, height))
     
-    return brighten_image(image_To_Outline(image))
+    return brighten_image(image)
 
 def brighten_image(image):
     """
@@ -229,6 +229,6 @@ def brighten_image(image):
     Returns:
         image (image): brightened image
     """
-    image = image * 2
-    image = np.clip(image, 0, 255)
+    # image = image * 2
+    # image = np.clip(image, 0, 255)
     return image
