@@ -86,7 +86,33 @@ def image_To_Outline(img):
                         [-1, 4, -1],
                         [0, -1, 0]])
     img = cv2.filter2D(src=img, ddepth=-1, kernel=outline)
-    return brightenImage(img)
+    return img
+
+def gaussian_filter(kernel_size, img, sigma=1, muu=0):
+    """
+    creates a gaussian filter of size kernel_size and
+    standard deviation sigma then pads with zero to match image shape
+    This is necessary to compute the division in frequency domain
+    """
+    x, y = np.meshgrid(np.linspace(-1,1,kernel_size),
+                        np.linspace(-1,1,kernel_size))
+    dst = np.sqrt(x**2+y**2)
+    normal = 1/(((2*np.pi)**0.5)*sigma)
+    gauss = np.exp(-((dst-muu)**2 / (2.0 * sigma**2))) * normal
+    gauss = np.pad(gauss, [(0, img.shape[0] - gauss.shape[0]), (0, img.shape[1] - gauss.shape[1])], 'constant')
+    return gauss
+
+def fft_deblur(img, kernel_size, kernel_sigma=5,factor='wiener',const=0.002):
+    gauss = gaussian_filter(kernel_size,img,kernel_sigma)
+    img_fft = np.fft.fft2(img)
+    gauss_fft = np.fft.fft2(gauss)
+    weiner_factor = 1 / (1+(const/np.abs(gauss_fft)**2))
+    if factor!='wiener':
+        weiner_factor = factor
+    recon = img_fft/gauss_fft
+    recon*=weiner_factor
+    recon = np.abs(np.fft.ifft2(recon))
+    return recon
 
 def relation_Figure(comparison_Set, image, answer, transformations, classified, relations, title):
     """
@@ -191,20 +217,18 @@ def apply_transformations(x, image):
                                [Y_shear, 1, 0]])
     image = cv2.warpAffine(image, shear_matrix, (width, height))
     
-    return image
+    return brighten_image(image_To_Outline(image))
 
-def brightenImage(image):
-    a, SA = image_Points_Intensities(image)
-    avg = np.average(SA)
-    if (max == 0):
-        return image
-    image = image * (255 / avg)
-    image[image > 255] = 255
-    return image
+def brighten_image(image):
+    """
+    Brightens the image by a random amount
 
-# def brightenImage(image):
-#     max = np.max(image)
-#     if max == 0:
-#         return image
-#     image = image * (255 / max)
-#     return image
+    Args:
+        image (image): original image to be brightened
+
+    Returns:
+        image (image): brightened image
+    """
+    image = image * 2
+    image = np.clip(image, 0, 255)
+    return image

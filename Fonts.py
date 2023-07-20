@@ -1,6 +1,6 @@
 from PIL import ImageFont, Image, ImageDraw
 import random, os, numpy as np
-from ImageUtility import apply_transformations, display_Set, image_Points_Intensities, lb, ub
+from ImageUtility import apply_transformations, display_Set, image_Points_Intensities, lb, ub, fft_deblur
 import matplotlib.pyplot as plt
 from fontTools.ttLib import TTFont
 
@@ -195,8 +195,13 @@ def generate_random_set(lower_bound, upper_bound):
         random_set.append(random_element)
     return random_set
 
-# imgs = read_font('fonts/fonts-master/apache/aclonica/Aclonica-Regular.ttf', '0123456789', 45)
+# imgs, font = get_Random_Set(size=30)
+# imgs = transform_Set(imgs)
+# imgs = transform_Set(imgs)
+# print(font)
 # print(imgs[0].shape)
-# a, SA = image_Points_Intensities(imgs[0])
-# print(a.shape)
-# display_Set(plt, imgs)
+# fig, axs = plt.subplots(2)
+# display_Set(axs[0], imgs)
+# for i in range(len(imgs)):
+#     imgs[i] = fft_deblur(imgs[i], 4, 5, factor='wiener', const=0.5)
+# display_Set(axs[1], imgs)

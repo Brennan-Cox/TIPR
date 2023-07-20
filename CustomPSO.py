@@ -100,15 +100,15 @@ def custom_pso(func, lb, ub, args=(), swarmsize=100,
     swarm.best_pos, swarm.best_cost = topology.compute_gbest(swarm)
 
     # assert that swarm is fully initialized with correct dimensions
-    # assert np.array(swarm.position).shape == (swarmsize, dimensions), 'Swarm position must be size (n_particles, dimensions)'
-    # assert np.array(swarm.velocity).shape == (swarmsize, dimensions), 'Swarm velocity must be size (n_particles, dimensions)'
-    # assert swarm.n_particles > 0 and swarm.n_particles == swarmsize, 'Swarm size must be a positive integer'
-    # assert swarm.dimensions == dimensions, 'swarm dimensions and instance dimenstions must be equal'
-    # assert np.array(swarm.current_cost).shape == (swarmsize, ), 'Swarm current_cost must be size (n_particles,)'
-    # assert np.array(swarm.pbest_pos).shape == (swarmsize, dimensions), 'Swarm pbest_pos must be size (n_particles, dimensions)'
-    # assert np.array(swarm.pbest_cost).shape == (swarmsize,), 'Swarm pbest_cost must be size (n_particles,)'
-    # assert np.array(swarm.best_pos).shape == (dimensions,), 'Swarm best_pos must be size (dimensions,)'
-    # assert np.isscalar(swarm.best_cost), 'Swarm best_cost must be a scalar'
+    assert np.array(swarm.position).shape == (swarmsize, dimensions), 'Swarm position must be size (n_particles, dimensions)'
+    assert np.array(swarm.velocity).shape == (swarmsize, dimensions), 'Swarm velocity must be size (n_particles, dimensions)'
+    assert swarm.n_particles > 0 and swarm.n_particles == swarmsize, 'Swarm size must be a positive integer'
+    assert swarm.dimensions == dimensions, 'swarm dimensions and instance dimenstions must be equal'
+    assert np.array(swarm.current_cost).shape == (swarmsize, ), 'Swarm current_cost must be size (n_particles,)'
+    assert np.array(swarm.pbest_pos).shape == (swarmsize, dimensions), 'Swarm pbest_pos must be size (n_particles, dimensions)'
+    assert np.array(swarm.pbest_cost).shape == (swarmsize,), 'Swarm pbest_cost must be size (n_particles,)'
+    assert np.array(swarm.best_pos).shape == (dimensions,), 'Swarm best_pos must be size (dimensions,)'
+    assert np.isscalar(swarm.best_cost), 'Swarm best_cost must be a scalar'
 
     # Shrink boundary handler will shrink the particle's velocity if it goes out of bounds
     bh = BoundaryHandler(strategy="random")
@@ -134,6 +134,7 @@ def custom_pso(func, lb, ub, args=(), swarmsize=100,
                 # to a random position within the bounds
                 if np.sqrt(np.sum((swarm.position[i] - swarm.position[j])**2)) <= minstep:
                     swarm.position[i] = np.random.uniform(lb, ub, dimensions)
+                    swarm.velocity[i] = np.random.uniform(vlow, vhigh, dimensions)
 
         # Warning that the particles are not within the bounds and need to be clipped
         if not np.all(swarm.position <= ub): Warning('A particle moved out of bounds (upper): ' + str(swarm.position))

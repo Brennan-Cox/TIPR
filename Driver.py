@@ -5,7 +5,7 @@ from ImageUtility import image_To_Outline, relation_Figure
 # from MNIST import random_Comparison_Set, random_Image
 from OptimalTransport import classify_Image
 from ParticleSwarm import optimal_sample_transform, optimal_sample_transform_test
-from Fonts import get_Random_Set, transform_image
+from Fonts import get_Random_Set, read_font, transform_image
 from tqdm import tqdm
 import random
 from IO import suppress_stdout
@@ -54,8 +54,6 @@ def testPSO(cases, trials_per_case, display, display_Incorrect):
             
             if (display or (not correct and display_Incorrect)):
                 classified_As, relations = classify_Image(comparison_Set, transformed_Images)
-                # title is font and xopt
-                # np.array to string
                 xoptStr = np.array2string(xopt, precision=2, separator=',', suppress_small=True)    
                 title = font + ' ' + xoptStr
                 relation_Figure(comparison_Set, rand_Image, rand_Answer, transformed_Images, classified_As, relations, title)
