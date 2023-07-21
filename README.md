@@ -29,6 +29,7 @@ pip install keras
 pip install POT
 pip install opencv-python
 pip install inflect
+pip install openpyxl
 ```
 
 ## Usage

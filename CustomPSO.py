@@ -136,8 +136,8 @@ def custom_pso(func, lb, ub, args=(), swarmsize=100,
                 if np.sqrt(np.sum((swarm.position[k] - swarm.position[j])**2)) < minstep:
                     collisions += 1
                     # move the particle just outside the bounds
-                    swarm.position[k] = swarm.position[k] + np.random.uniform(-1, 1, dimensions) * minstep
-                    # swarm.position[k] = np.random.uniform(lb, ub, dimensions)
+                    # swarm.position[k] = swarm.position[k] + np.random.uniform(-1, 1, dimensions) * minstep
+                    swarm.position[k] = np.random.uniform(lb, ub, dimensions)
                     swarm.velocity[k] = np.random.uniform(vlow, vhigh, dimensions)
 
         # Warning that the particles are not within the bounds and need to be clipped

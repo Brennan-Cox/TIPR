@@ -1,4 +1,5 @@
 import matplotlib.pyplot as plt
+import openpyxl
 import seaborn as sb
 import numpy as np
 from ImageUtility import image_Points_Intensities, image_To_Outline, relation_Figure, ub, lb
@@ -10,10 +11,28 @@ from tqdm import tqdm
 import random
 import pandas as pd
 from IO import suppress_stdout
+from writer import write_To_Excel
 
 def testPSO(cases, trials_per_case, display, display_Incorrect):
     data = []
     rows = []
+    cols = ['font', 'answer', 'classified_as']
+    options = {
+                        'comp_set': None,
+                        'sample_image': None,
+                        'func': objective_function_custom,
+                        'lb': lb,
+                        'ub': ub,
+                        'swarmsize': 40,
+                        'w': 1.0,
+                        'c1': 0.5,
+                        'c2': 0.5,
+                        'maxiter': 100,
+                        'minstep': 1e-4,
+                        'minfunc': 1e-5,
+                        'debug': False,
+                        'inertia_decay': 0.96
+                    }
     progressBar = tqdm(total=cases * trials_per_case, desc='testPSO')
     for i in range(cases):
         totalCorrect = 0
@@ -35,25 +54,11 @@ def testPSO(cases, trials_per_case, display, display_Incorrect):
             # PSO
             try:
                 with suppress_stdout():
+                    options['comp_set'] = comparison_Set
+                    options['sample_image'] = rand_Image
                     tqdm.write('***************BEGIN TEST CASE NUMBER {:}***************'.format(j))
-                    options = {
-                        'comp_set': comparison_Set,
-                        'sample_image': rand_Image,
-                        'func': objective_function_custom,
-                        'lb': lb,
-                        'ub': ub,
-                        'swarmsize': 40,
-                        'w': 1.0,
-                        'c1': 0.5,
-                        'c2': 0.5,
-                        'maxiter': 100,
-                        'minstep': 1e-4,
-                        'minfunc': 1e-5,
-                        'debug': False,
-                        'inertia_decay': 0.96
-                    }
                     transformed_Images, classified_As, xopt = optimal_sample_transform(options)
-                    rows.append({ 'font': font, 'answer': rand_Answer, 'classified': classified_As })
+                    rows.append([font, rand_Answer, classified_As])
             except Exception as e:
                 print(e)
                 tqdm.write('***************Test case failed with font {}***************'.format(font))
@@ -73,10 +78,18 @@ def testPSO(cases, trials_per_case, display, display_Incorrect):
         accuracy = totalCorrect / testCases * 100
         data.append(accuracy)
         tqdm.write('Accuracy for font {:} is {:}%'.format(font, accuracy))
+
+        path = 'results.xlsx'
+        testDesc = 'swarmSize={:},w={:},c1={:},c2={:},maxIter={:},minStep={:},minFunc={:},inertiaDecay={:}'.format(options['swarmsize'], options['w'], options['c1'], options['c2'], options['maxiter'], options['minstep'], options['minfunc'], options['inertia_decay'])
+        tqdm.write('Writing to excel file...')
+        write_To_Excel(rows=rows, cols=cols, sheetName=testDesc, path=path)
+        rows = []
+    
+    progressBar.close()
     sb.displot(data, kde=True, bins=cases)
     
     accuracy = np.sum(data) / cases
     string = "Accuracy is {}".format(accuracy)
     plt.title(string)
 
-testPSO(30, 30, display=False, display_Incorrect=True)
+testPSO(100, 100, display=False, display_Incorrect=True)

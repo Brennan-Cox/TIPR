@@ -29,23 +29,23 @@ def optimal_sample_transform(options):
     # fit to each pattern
     collisionsArr = []
     itterations = []
-    for i in range(len(options.get('comp_set'))):
+    for i in range(len(options['comp_set'])):
         # xopt, fopt = custom_pso(func=objective_function_custom_L1, lb=lb, ub=ub,
         #                         args=(comp_set[i], sample_image),
         #                         swarmsize=30, w=1.0, c1=0.5, c2=0.5,maxiter=100,
         #                         minstep=1e-4, minfunc=1e-5, debug=False, inertia_decay=0.95)
-        xopt, fopt, collisions, it = custom_pso(func=options.get('func'), lb=options.get('lb'), 
-                                ub=options.get('ub'), args=(image_Points_Intensities(options.get('comp_set')[i]), options.get('sample_image')), 
-                                swarmsize=options.get('swarmsize'), w=options.get('w'), 
-                                c1=options.get('c1'), c2=options.get('c2'),maxiter=options.get('maxiter'), 
-                                minstep=options.get('minstep'), minfunc=options.get('minfunc'),
-                                debug=options.get('debug'), inertia_decay=options.get('inertia_decay'))
+        xopt, fopt, collisions, it = custom_pso(func=options['func'], lb=options['lb'], 
+                                ub=options['ub'], args=(image_Points_Intensities(options['comp_set'][i]), 
+                                options['sample_image']), swarmsize=options['swarmsize'], w=options['w'], 
+                                c1=options['c1'], c2=options['c2'],maxiter=options['maxiter'], 
+                                minstep=options['minstep'], minfunc=options['minfunc'],
+                                debug=options['debug'], inertia_decay=options['inertia_decay'])
         collisionsArr.append(collisions)
         itterations.append(it)
         if (min_score > fopt):
             min_answer = i
             min_score = fopt
-        best_images.append(apply_transformations(xopt, options.get('sample_image')))
+        best_images.append(apply_transformations(xopt, options['sample_image']))
     # plt.scatter(itterations, collisionsArr)
     # plt.xlabel("itterations, avg {:}".format(np.average(itterations)))
     # plt.ylabel("collisions, avg {:}".format(np.average(collisionsArr)))

@@ -7,3 +7,4 @@ fonts
 __pycache__/ImageUtility.cpython-311.pyc
 report.log
 excel
+*.xlsx
