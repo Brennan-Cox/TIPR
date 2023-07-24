@@ -38,7 +38,7 @@ def testPSO(cases, trials_per_case, display, display_Incorrect):
         totalCorrect = 0
         testCases = trials_per_case
         # Fonts
-        original_Set, font = get_Random_Set(size=30)
+        original_Set, font = get_Random_Set(size=30, characters='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789')
         # MNIST
         # original_Set = random_Comparison_Set()
         # Convolution
@@ -92,4 +92,4 @@ def testPSO(cases, trials_per_case, display, display_Incorrect):
     string = "Accuracy is {}".format(accuracy)
     plt.title(string)
 
-testPSO(100, 100, display=False, display_Incorrect=True)
+testPSO(100, 100, display=False, display_Incorrect=False)
