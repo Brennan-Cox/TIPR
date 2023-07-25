@@ -3,7 +3,6 @@ import openpyxl
 import seaborn as sb
 import numpy as np
 from ImageUtility import image_Points_Intensities, image_To_Outline, relation_Figure, ub, lb
-from MNIST import random_Comparison_Set, random_Image
 # from MNIST import random_Comparison_Set, random_Image
 from OptimalTransport import classify_Image
 from ParticleSwarm import objective_function_custom, optimal_sample_transform, optimal_sample_transform_test
