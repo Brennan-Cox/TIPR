@@ -30,10 +30,6 @@ def optimal_sample_transform(options):
     collisionsArr = []
     itterations = []
     for i in range(len(options['comp_set'])):
-        # xopt, fopt = custom_pso(func=objective_function_custom_L1, lb=lb, ub=ub,
-        #                         args=(comp_set[i], sample_image),
-        #                         swarmsize=30, w=1.0, c1=0.5, c2=0.5,maxiter=100,
-        #                         minstep=1e-4, minfunc=1e-5, debug=False, inertia_decay=0.95)
         xopt, fopt, collisions, it = custom_pso(func=options['func'], lb=options['lb'], 
                                 ub=options['ub'], args=(image_Points_Intensities(options['comp_set'][i]), 
                                 options['sample_image']), swarmsize=options['swarmsize'], w=options['w'], 

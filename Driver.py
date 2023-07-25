@@ -3,6 +3,7 @@ import openpyxl
 import seaborn as sb
 import numpy as np
 from ImageUtility import image_Points_Intensities, image_To_Outline, relation_Figure, ub, lb
+from MNIST import random_Comparison_Set, random_Image
 # from MNIST import random_Comparison_Set, random_Image
 from OptimalTransport import classify_Image
 from ParticleSwarm import objective_function_custom, optimal_sample_transform, optimal_sample_transform_test
@@ -38,9 +39,10 @@ def testPSO(cases, trials_per_case, display, display_Incorrect):
         totalCorrect = 0
         testCases = trials_per_case
         # Fonts
-        original_Set, font = get_Random_Set(size=30, characters='ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789')
+        original_Set, font = get_Random_Set(size=30, characters='0123456789')
         # MNIST
         # original_Set = random_Comparison_Set()
+        # font = 'MNIST'
         # Convolution
         comparison_Set = original_Set
         for k in range(len(original_Set)):
@@ -50,6 +52,8 @@ def testPSO(cases, trials_per_case, display, display_Incorrect):
             
             rand_Answer = random.randint(0, len(comparison_Set) - 1)
             rand_Image = transform_image(comparison_Set[rand_Answer])
+            # MNIST
+            # rand_Image, rand_Answer = random_Image()
             
             # PSO
             try:
@@ -79,10 +83,9 @@ def testPSO(cases, trials_per_case, display, display_Incorrect):
         data.append(accuracy)
         tqdm.write('Accuracy for font {:} is {:}%'.format(font, accuracy))
 
-        path = 'results.xlsx'
-        testDesc = 'swarmSize={:},w={:},c1={:},c2={:},maxIter={:},minStep={:},minFunc={:},inertiaDecay={:}'.format(options['swarmsize'], options['w'], options['c1'], options['c2'], options['maxiter'], options['minstep'], options['minfunc'], options['inertia_decay'])
+        path = 'Fonts-swarmSize={:},w={:},c1={:},c2={:},maxIter={:},minStep={:},minFunc={:},inertiaDecay={:}.xlsx'.format(options['swarmsize'], options['w'], options['c1'], options['c2'], options['maxiter'], options['minstep'], options['minfunc'], options['inertia_decay'])
         tqdm.write('Writing to excel file...')
-        write_To_Excel(rows=rows, cols=cols, sheetName=testDesc, path=path)
+        write_To_Excel(rows=rows, cols=cols, sheetName='results', path=path)
         rows = []
     
     progressBar.close()
@@ -92,4 +95,4 @@ def testPSO(cases, trials_per_case, display, display_Incorrect):
     string = "Accuracy is {}".format(accuracy)
     plt.title(string)
 
-testPSO(30, 30, display=False, display_Incorrect=False)
+testPSO(100, 100, display=False, display_Incorrect=False)
