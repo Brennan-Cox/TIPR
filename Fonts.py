@@ -151,6 +151,16 @@ def get_Random_Set(characters = '0123456789', size = 28):
             
     return images, path
 
+def get_Random_Image(characters = '0123456789', size = 28):
+    """
+    generates a random image with a random font
+    returns the image and the answer
+    """
+    set, font = get_Random_Set(characters, size)
+    # return a random image from the set
+    rand = np.random.randint(0, len(set))
+    return set[rand], rand
+
 def transform_image(image):
     """
 
