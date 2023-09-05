@@ -4,6 +4,7 @@ import pygame
 import matplotlib.pyplot as plt
 import inflect
 import cv2
+import tqdm
 from IO import suppress_stdout
 
 from ImageUtility import display_Set, image_To_Outline, lb, relation_Figure, ub
@@ -92,7 +93,7 @@ def classify_image(images, img, answer):
     return correct
 # get all the images
 arr = []
-total = 3
+total = 10
 for i in range(total):
     img = prompt_image(i)
     # img = image_To_Outline(img)
@@ -101,7 +102,7 @@ for i in range(total):
 display_Set(plt, arr)
 
 correct = 0
-total = 1
+total = 2
 
 to_classify = []
 for i in range(total):
@@ -109,7 +110,9 @@ for i in range(total):
     img = prompt_image(answer)
     to_classify.append({'answer' : answer, 'img' : img})
 
+progress_bar = tqdm.tqdm(total=total, desc='testPSO')
 for i in range(total):
     case = to_classify[i]
     if (classify_image(arr, case['img'], case['answer'])) : correct += 1
+    progress_bar.update(1)
 print("Accuracy: " + str(correct / total * 100) + "%")
