@@ -30,6 +30,7 @@ pip install POT
 pip install opencv-python
 pip install inflect
 pip install openpyxl
+pip install pygame
 ```
 
 ## Usage
@@ -48,8 +49,9 @@ Contact me if you have ideas for features or improvements.
 Brennan Cox
 ### In collaboration with:
 Nathaniel Lahn
-### Honorable Mention:
+### Previous works:
 Jordan Seiler
+https://github.com/JDSeiler/no-ml-digit-classifier
 
 ## License
 Educational ONLY
