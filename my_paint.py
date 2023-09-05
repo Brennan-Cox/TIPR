@@ -55,9 +55,8 @@ def prompt_image(i):
     pygame.quit()
     return image
 
-def classify_image(images):
-    rand_Answer = random.randint(0, len(images) - 1)
-    img = prompt_image(rand_Answer)
+def classify_image(images, img, answer):
+    rand_Answer = answer
     # img = image_To_Outline(img)
     options = {
                         'comp_set': None,
@@ -93,7 +92,8 @@ def classify_image(images):
     return correct
 # get all the images
 arr = []
-for i in range(10):
+total = 3
+for i in range(total):
     img = prompt_image(i)
     # img = image_To_Outline(img)
     arr.append(img)
@@ -102,6 +102,14 @@ display_Set(plt, arr)
 
 correct = 0
 total = 1
+
+to_classify = []
 for i in range(total):
-    if (classify_image(arr)) : correct += 1
+    answer = random.randint(0, total)
+    img = prompt_image(answer)
+    to_classify.append({'answer' : answer, 'img' : img})
+
+for i in range(total):
+    case = to_classify[i]
+    if (classify_image(arr, case['img'], case['answer'])) : correct += 1
 print("Accuracy: " + str(correct / total * 100) + "%")
