@@ -86,11 +86,11 @@ def testPSO(cases, trials_per_case, display, display_Incorrect):
             progressBar.update(1)
         accuracy = totalCorrect / testCases * 100
         data.append(accuracy)
-        # tqdm.write('Accuracy for font {:} is {:}%'.format(font, accuracy))
+        tqdm.write('Accuracy for font {:} is {:}%'.format(font, accuracy))
 
-        # path = 'Fonts-swarmSize={:},w={:},c1={:},c2={:},maxIter={:},minStep={:},minFunc={:},inertiaDecay={:}.xlsx'.format(options['swarmsize'], options['w'], options['c1'], options['c2'], options['maxiter'], options['minstep'], options['minfunc'], options['inertia_decay'])
-        # tqdm.write('Writing to excel file...')
-        # write_To_Excel(rows=rows, cols=cols, sheetName='results', path=path)
+        path = 'FontsRS-swarmSize={:},w={:},c1={:},c2={:},maxIter={:},minStep={:},minFunc={:},inertiaDecay={:}.xlsx'.format(options['swarmsize'], options['w'], options['c1'], options['c2'], options['maxiter'], options['minstep'], options['minfunc'], options['inertia_decay'])
+        tqdm.write('Writing to excel file...')
+        write_To_Excel(rows=rows, cols=cols, sheetName='results', path=path)
         rows = []
     
     progressBar.close()
@@ -100,4 +100,4 @@ def testPSO(cases, trials_per_case, display, display_Incorrect):
     string = "Accuracy is {}".format(accuracy)
     plt.title(string)
 
-testPSO(1, 30, display=False, display_Incorrect=True)
+testPSO(1, 30, display=False, display_Incorrect=False)
