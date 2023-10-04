@@ -54,7 +54,7 @@ Jordan Seiler
 https://github.com/JDSeiler/no-ml-digit-classifier
 
 ## License
-Educational ONLY
+Personal Use ONLY
 
 ## Project status
 Under development
