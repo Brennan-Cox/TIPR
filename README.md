@@ -53,8 +53,5 @@ Nathaniel Lahn
 Jordan Seiler
 https://github.com/JDSeiler/no-ml-digit-classifier
 
-## License
-Personal Use ONLY
-
 ## Project status
 Under development
