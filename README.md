@@ -1,6 +1,6 @@
 # TIPR
 
-Program takes a set of images, applies a random affine transformation to the image, then uses a combination of particle swarm optimization (PSO) and optimal transport (OT) to find the minimum cost OT transport plan while exploring dimensions of transformation through PSO ability to search a mulitdimenstional space
+Program takes a set of images, applies a random affine transformation to the image, then uses a combination of particle swarm optimization (PSO) and optimal transport (OT) to find the minimum cost OT transport plan while exploring dimensions of transformation through PSO ability to search a multidimensional space
 
 ## Name
 Transform Invariant Pattern Recognition
